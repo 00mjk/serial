@@ -9,8 +9,7 @@ and github.com/johnlauer/goserial package
 Initially this project aims to provide API and compatibility for windows.
 As time progresses other architectures would be added.
 
-A special thing about this library is that its inherently Context based and
-performs read write asynchronously as expected.
+This library is Context based and performs read write asynchronously.
 
 By default this package uses 8 bits (byte) data format for exchange.
 
@@ -20,6 +19,7 @@ Note: Baud rates are defined as OS specifics
 package goembserial
 
 import (
+	"errors"
 	"io"
 	"time"
 )
@@ -55,7 +55,7 @@ const (
 const (
 	FlowNone     byte = iota
 	FlowHardware byte = iota
-	FlowSoft     byte = iota // XON / XOFF based
+	FlowSoft     byte = iota // XON / XOFF based - Not Supported
 )
 
 /*
@@ -71,6 +71,10 @@ type SerialConfig struct {
 	SignalInvert bool // Option to invert the RTS/CTS/DTR/DSR Read outs
 }
 
+var ErrNotImplemented error = errors.New("Not Implemented yet")
+
+var ErrPortNotInitialized error = errors.New("Port not initialized or closed")
+
 /*
   Serial Port Interface Type for Multi platform implementation
 */
@@ -82,6 +86,9 @@ type SerialInterface interface {
 	Dsr() (en bool, err error)
 	SetBaud(baud int) (err error)
 	SignalInvert(en bool) (err error)
-	SendBreak(t time.Duration) (err error)
-	GetEvents(ev byte) (err error)
+	SendBreak(en bool) (err error)
+}
+
+func OpenPort(cfg *SerialConfig) (SerialInterface, error) {
+	return openPort(cfg)
 }
