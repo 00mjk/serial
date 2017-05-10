@@ -25,12 +25,12 @@ import (
 )
 
 /*
- Data size is always 8-bits
+Data size is always 8-bits
 */
 const DataSize byte = 8
 
 /*
- Specific Stop bits type
+Specific Stop bits type
 */
 const (
 	StopBits_1   byte = 1
@@ -39,7 +39,7 @@ const (
 )
 
 /*
- Parity Types
+Parity Types
 */
 const (
 	ParityNone  byte = iota
@@ -50,7 +50,7 @@ const (
 )
 
 /*
- Synchronization Type
+Synchronization Type
 */
 const (
 	FlowNone     byte = iota
@@ -59,7 +59,7 @@ const (
 )
 
 /*
- Serial Port configuration Storage Type
+Serial Port configuration Storage Type
 */
 type SerialConfig struct {
 	Name         string
@@ -71,12 +71,16 @@ type SerialConfig struct {
 	SignalInvert bool // Option to invert the RTS/CTS/DTR/DSR Read outs
 }
 
+/*
+Default Error Types returned
+ */
+
 var ErrNotImplemented error = errors.New("Not Implemented yet")
 
 var ErrPortNotInitialized error = errors.New("Port not initialized or closed")
 
 /*
-  Serial Port Interface Type for Multi platform implementation
+Serial Port Interface Type for Multi platform implementation
 */
 type SerialInterface interface {
 	io.ReadWriteCloser
@@ -89,6 +93,9 @@ type SerialInterface interface {
 	SendBreak(en bool) (err error)
 }
 
+/*
+Function to Create the Serial Port and return an Interface type enclosing the configuration
+*/
 func OpenPort(cfg *SerialConfig) (SerialInterface, error) {
 	return openPort(cfg)
 }
