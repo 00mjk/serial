@@ -91,8 +91,8 @@ const (
 	ECF_SetBreak uint32 = 8
 	ECF_SetDtr   uint32 = 5
 	ECF_SetRts   uint32 = 3
-	ECF_SendXoff uint32 = 1
-	ECF_SendXon  uint32 = 2
+	// ECF_SendXoff uint32 = 1
+	// ECF_SendXon uint32 = 2
 )
 
 /**
@@ -129,10 +129,10 @@ const txBufferSize = 64
 Modem Status Masks for Windows
 */
 const (
-	modemStatusMask_CTS_ON  = 0x0010
-	modemStatusMask_DSR_ON  = 0x0020
-	modemStatusMask_RING_ON = 0x0040
-	modemStatusMask_RLSD_ON = 0x0080
+	modemStatusMask_CTS_ON = 0x0010
+	modemStatusMask_DSR_ON = 0x0020
+	// modemStatusMask_RING_ON = 0x0040
+	// modemStatusMask_RLSD_ON = 0x0080
 )
 
 // DLL Functions
@@ -207,7 +207,8 @@ func openPort(cfg *SerialConfig) (SerialInterface, error) {
 
 	// Actually Open Stream
 	f := os.NewFile(uintptr(h), cfg.Name)
-	defer func() { // On Error Closure
+	defer func() {
+		// On Error Closure
 		if err != nil {
 			f.Close()
 		}
