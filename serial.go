@@ -15,14 +15,25 @@ By default this package uses 8 bits (byte) data format for exchange.
 
 Note: Baud rates are defined as OS specifics
 
+Currently Following Features are supported:
+
+ 1. All types of BAUD rates
+ 2. Flow Control - Hardware, Software (XON/XOFF)
+ 3. RTS , DTR control
+ 4. CTS , DSR read back
+ 5. Parity Control - Odd, Even, Mark, Space
+ 6. Stop Bit Control - 1 bit and 2 bits
+ 7. Hardware to Software Signal Inversion for all Signals RTS, CTS, DTR, DSR
+ X. ... More on the way ...
+
 */
 package goembserial
 
 import (
 	"errors"
 	"io"
-	"time"
 	"strconv"
+	"time"
 )
 
 /*
@@ -74,7 +85,7 @@ type SerialConfig struct {
 
 /*
 Default Error Types returned
- */
+*/
 
 var ErrNotImplemented error = errors.New("Not Implemented yet")
 

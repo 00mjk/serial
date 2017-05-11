@@ -3,11 +3,11 @@
 package goembserial
 
 import (
+	"errors"
+	"log"
+	"strconv"
 	"syscall"
 	"unsafe"
-	"strconv"
-	"log"
-	"errors"
 )
 
 type structDCB struct {
@@ -96,9 +96,9 @@ Stop Bit Conversion map for Windows
 */
 var (
 	stopbitMap = map[byte]byte{
-		StopBits_1:   0,
-		StopBits_1_5: 1,
-		StopBits_2:   2,
+		StopBits_1: 0,
+		//		StopBits_1_5: 1,
+		StopBits_2: 2,
 	}
 )
 
@@ -189,29 +189,69 @@ func wSetCommState(h syscall.Handle, baud int, stopbits byte, parity byte, flow 
 		  DWORD fRtsControl  :2       // Flag[1]:4-5 // 13 and 14th bit, so [12:13]
 		  DWORD fAbortOnError  :1     // Flag[1]:6
 	*/
-	params.flags[0] = 0x01  // fBinary  :1
-	params.flags[0] |= 0x10 // fDtrControl  :2 DTR Flow Control Enabled and ON
-	params.flags[1] = 0x10  // fRtsControl  :2 RTS Flow Control Enabled and ON
+	params.flags[0] = (1 << 0)    // fBinary  :1
+	params.flags[0] |= (0x1 << 4) // fDtrControl  :2 DTR_CONTROL_ENABLE and ON
+	params.flags[1] = (0x1 << 4)  // fRtsControl  :2 RTS_CONTROL_ENABLE and ON
 
 	if parity != ParityNone {
-		params.flags[0] |= 0x02 //fParity  :1
+		params.flags[0] |= (1 << 1) //fParity  :1
 	}
 
+	/*
+		// Flow Control
+		if ( flowControl == "hardware" ){
+		      dcb.fOutX = false;
+	        dcb.fInX = false;
+	        dcb.fOutxCtsFlow = true;
+	        dcb.fOutxDsrFlow = true;
+	        dcb.fDsrSensitivity = true;
+	        dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
+	        dcb.fDtrControl = DTR_CONTROL_HANDSHAKE;
+		}else if ( flowControl == "xon/xoff" ){
+	        dcb.fOutX = true;
+	        dcb.fInX = true;
+	        dcb.fOutxCtsFlow = false;
+	        dcb.fOutxDsrFlow = false;
+	        dcb.fDsrSensitivity = false;
+	        dcb.fRtsControl = RTS_CONTROL_DISABLE;
+	        dcb.fDtrControl = DTR_CONTROL_DISABLE;
+		}
+	*/
+
 	if flow == FlowHardware {
-		params.flags[0] |= 0x04 // fOutxCtsFlow  :1
-		params.flags[1] = 0x30  // fRtsControl  :2 RTS Flow Control RTS_CONTROL_TOGGLE wrt buffer
+
+		// fOutxCtsFlow  :1 Enabled
+		params.flags[0] = (params.flags[0] & (^byte(1 << 2))) | (1 << 2)
+
+		// fOutxDsrFlow  :1 Enabled
+		// params.flags[0] = (params.flags[0] & (^byte(1<<3))) | (1<<3)
+
+		// fDtrControl  :2 DTR Flow Control DTR_CONTROL_HANDSHAKE
+		// params.flags[0] = (params.flags[0] & (^byte(0x3<<4))) | (0x2<<4)
+
+		// fRtsControl  :2 RTS Flow Control RTS_CONTROL_HANDSHAKE
+		params.flags[1] = (0x2 << 4)
+	} else if flow == FlowSoft {
+		//fOutX  :1   Enabled // Flag[1]:0
+		params.flags[1] |= (1 << 0)
+		//fInX  :1    Enabled // Flag[1]:1
+		params.flags[1] |= (1 << 1)
 	}
 
 	// Currently Soft Flow not Supported
-	if flow == FlowSoft {
+	/*if flow == FlowSoft {
 		return ErrNotImplemented
-	}
+	}*/
 
 	log.Println("Byte val of commstat flags[0]:", strconv.FormatInt(int64(params.flags[0]), 2))
 	log.Println("Byte val of commstat flags[1]:", strconv.FormatInt(int64(params.flags[1]), 2))
 
 	if baud == 0 || baud < 0 {
 		return errors.New("Error in Baudrate " + string(baud))
+	}
+
+	if stopbits == StopBits_1_5 {
+		return errors.New("Stopbits " + stopBitStr(stopbits) + " Not supported by many serial ports")
 	}
 
 	params.BaudRate = uint32(baud)

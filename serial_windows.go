@@ -18,12 +18,12 @@ type serialPort struct {
 	ctx          context.Context
 	cancelfunc   context.CancelFunc
 	//done    chan<- bool // Used only for Indication that the last operation was completed
-	ro           *syscall.Overlapped
-	wo           *syscall.Overlapped
-	isBreak      bool // Indicate if the Break is enabled
+	ro      *syscall.Overlapped
+	wo      *syscall.Overlapped
+	isBreak bool // Indicate if the Break is enabled
 
-	rl           sync.Mutex // Need to Eleminate these
-	wl           sync.Mutex
+	rl sync.Mutex // Need to Eleminate these
+	wl sync.Mutex
 }
 
 /**
@@ -153,16 +153,15 @@ func (p *serialPort) Rts(en bool) error {
 		return ErrPortNotInitialized
 	}
 
+	if p.conf.SignalInvert {
+		en = !en
+	}
+
 	val := ECF_SetRts
-	if !p.conf.SignalInvert {
-		if !en {
-			val = ECF_ClrRts
-		}
+	if en {
+		val = ECF_SetRts
 	} else {
 		val = ECF_ClrRts
-		if !en {
-			val = ECF_SetRts
-		}
 	}
 
 	return wEscapeCommFunction(p.hWnd, val)
@@ -192,16 +191,15 @@ func (p *serialPort) Dtr(en bool) error {
 		return ErrPortNotInitialized
 	}
 
+	if p.conf.SignalInvert {
+		en = !en
+	}
+
 	val := ECF_SetDtr
-	if !p.conf.SignalInvert {
-		if !en {
-			val = ECF_ClrDtr
-		}
+	if en {
+		val = ECF_SetDtr
 	} else {
 		val = ECF_ClrDtr
-		if !en {
-			val = ECF_SetDtr
-		}
 	}
 
 	return wEscapeCommFunction(p.hWnd, val)
