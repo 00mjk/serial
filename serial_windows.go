@@ -224,6 +224,24 @@ func (p *serialPort) Dsr() (bool, error) {
 	return ret, nil
 }
 
+func (p *serialPort) Ring() (bool, error) {
+	if p == nil || p.fileInstance == nil {
+		return false, ErrPortNotInitialized
+	}
+
+	status, err := wGetCommModemStatus(p.hWnd)
+	if err != nil {
+		return false, err
+	}
+
+	ret := ((status & modemStatusMask_RING_ON) != 0)
+	if p.conf.SignalInvert {
+		ret = !ret
+	}
+
+	return ret, nil
+}
+
 func (p *serialPort) SetBaud(baud int) error {
 
 	if p == nil || p.fileInstance == nil {

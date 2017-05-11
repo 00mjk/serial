@@ -7,10 +7,12 @@
 @echo ". TX  <=> RX  Short"
 @echo ". CTS <=> RTS Short"
 @echo ". DTR <=> DSR Short"
+@echo ". TX  <=> RI  Short for break test"
 @echo .
 @echo . Configure this setup and Press Enter to continue
 @echo .
 @pause
+@echo mode: count > coverage-all.out
 @go test -v -cover -coverprofile=coverage.out -covermode=count .
 @tail -n +2 coverage.out >> coverage-all.out
 @set TEST_PORT=

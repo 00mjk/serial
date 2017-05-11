@@ -112,9 +112,9 @@ const txBufferSize = 64
 Modem Status Masks for Windows
 */
 const (
-	modemStatusMask_CTS_ON = 0x0010
-	modemStatusMask_DSR_ON = 0x0020
-	// modemStatusMask_RING_ON = 0x0040
+	modemStatusMask_CTS_ON  = 0x0010
+	modemStatusMask_DSR_ON  = 0x0020
+	modemStatusMask_RING_ON = 0x0040
 	// modemStatusMask_RLSD_ON = 0x0080
 )
 
@@ -198,24 +198,24 @@ func wSetCommState(h syscall.Handle, baud int, stopbits byte, parity byte, flow 
 	}
 
 	/*
-		// Flow Control
-		if ( flowControl == "hardware" ){
-		      dcb.fOutX = false;
-	        dcb.fInX = false;
-	        dcb.fOutxCtsFlow = true;
-	        dcb.fOutxDsrFlow = true;
-	        dcb.fDsrSensitivity = true;
-	        dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
-	        dcb.fDtrControl = DTR_CONTROL_HANDSHAKE;
-		}else if ( flowControl == "xon/xoff" ){
-	        dcb.fOutX = true;
-	        dcb.fInX = true;
-	        dcb.fOutxCtsFlow = false;
-	        dcb.fOutxDsrFlow = false;
-	        dcb.fDsrSensitivity = false;
-	        dcb.fRtsControl = RTS_CONTROL_DISABLE;
-	        dcb.fDtrControl = DTR_CONTROL_DISABLE;
-		}
+			// Flow Control
+			if ( flowControl == "hardware" ){
+			      dcb.fOutX = false;
+		        dcb.fInX = false;
+		        dcb.fOutxCtsFlow = true;
+		        dcb.fOutxDsrFlow = true;
+		        dcb.fDsrSensitivity = true;
+		        dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
+		        dcb.fDtrControl = DTR_CONTROL_HANDSHAKE;
+			}else if ( flowControl == "xon/xoff" ){
+		        dcb.fOutX = true;
+		        dcb.fInX = true;
+		        dcb.fOutxCtsFlow = false;
+		        dcb.fOutxDsrFlow = false;
+		        dcb.fDsrSensitivity = false;
+		        dcb.fRtsControl = RTS_CONTROL_DISABLE;
+		        dcb.fDtrControl = DTR_CONTROL_DISABLE;
+			}
 	*/
 
 	if flow == FlowHardware {

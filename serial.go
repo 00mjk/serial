@@ -20,10 +20,11 @@ Currently Following Features are supported:
  1. All types of BAUD rates
  2. Flow Control - Hardware, Software (XON/XOFF)
  3. RTS , DTR control
- 4. CTS , DSR read back
+ 4. CTS , DSR, RING read back
  5. Parity Control - Odd, Even, Mark, Space
  6. Stop Bit Control - 1 bit and 2 bits
  7. Hardware to Software Signal Inversion for all Signals RTS, CTS, DTR, DSR
+ 8. Sending Break from TX line
  X. ... More on the way ...
 
 */
@@ -87,7 +88,7 @@ type SerialConfig struct {
 Default Error Types returned
 */
 
-var ErrNotImplemented error = errors.New("Not Implemented yet")
+//var ErrNotImplemented error = errors.New("Not Implemented yet")
 
 var ErrPortNotInitialized error = errors.New("Port not initialized or closed")
 
@@ -100,6 +101,7 @@ type SerialInterface interface {
 	Cts() (en bool, err error)
 	Dtr(en bool) (err error)
 	Dsr() (en bool, err error)
+	Ring() (en bool, err error)
 	SetBaud(baud int) (err error)
 	SignalInvert(en bool) (err error)
 	SendBreak(en bool) (err error)

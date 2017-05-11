@@ -1,8 +1,5 @@
 package goembserial
 
-// TODO: Add better Logging
-// TODO: Make possible to run parallel tests for Serial configuration & transactions
-
 import (
 	"errors"
 	"github.com/stretchr/testify/assert"
@@ -55,8 +52,7 @@ func verifySetup(t *testing.T, order int) error {
 
 	if order == PARAM_LOOPBACK {
 		if os.Getenv("TEST_LOOPBACK") != "YES" {
-			return skipTestOnError(t,
-				"Not Loop Back configuration :"+os.Getenv("TEST_LOOPBACK"))
+			return skipTestOnError(t, "Not in Loop Back configuration")
 		}
 	}
 
@@ -122,7 +118,7 @@ func TestSerialConfig_N04(t *testing.T) {
 	assert.Contains(t, s, "Unknown")
 }
 
-func TestSerialConfig_N10(t *testing.T) {
+func TestSerialConfig_N05(t *testing.T) {
 	var c *SerialConfig
 
 	verifySetup(t, PARAM_PORT)
@@ -136,7 +132,7 @@ func TestSerialConfig_N10(t *testing.T) {
 	}
 }
 
-func TestSerialIntegation_N01(t *testing.T) {
+func TestSerialIntegration_N01(t *testing.T) {
 
 	verifySetup(t, PARAM_BAUD)
 
@@ -211,17 +207,24 @@ func Test_serialPort_N07(t *testing.T) {
 
 func Test_serialPort_N08(t *testing.T) {
 	handle := serialPort{}
-	err := handle.SignalInvert(true)
+	val, err := handle.Ring()
+	assert.Equal(t, val, false)
 	assert.Error(t, err)
 }
 
 func Test_serialPort_N09(t *testing.T) {
 	handle := serialPort{}
-	err := handle.SetBaud(9600)
+	err := handle.SignalInvert(true)
 	assert.Error(t, err)
 }
 
 func Test_serialPort_N10(t *testing.T) {
+	handle := serialPort{}
+	err := handle.SetBaud(9600)
+	assert.Error(t, err)
+}
+
+func Test_serialPort_N11(t *testing.T) {
 	handle := serialPort{}
 	err := handle.SendBreak(true)
 	assert.Error(t, err)
@@ -239,7 +242,7 @@ func TestSerialConfig_P01(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P01(t *testing.T) {
+func TestSerialIntegration_P01(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -257,7 +260,7 @@ func TestSerialIntegation_P01(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P02(t *testing.T) {
+func TestSerialIntegration_P02(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -307,7 +310,7 @@ func TestSerialIntegation_P02(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P03(t *testing.T) {
+func TestSerialIntegration_P03(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -357,7 +360,7 @@ func TestSerialIntegation_P03(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P04(t *testing.T) {
+func TestSerialIntegration_P04(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -375,7 +378,7 @@ func TestSerialIntegation_P04(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P05(t *testing.T) {
+func TestSerialIntegration_P05(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -393,7 +396,7 @@ func TestSerialIntegation_P05(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P06(t *testing.T) {
+func TestSerialIntegration_P06(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -411,7 +414,7 @@ func TestSerialIntegation_P06(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P07(t *testing.T) {
+func TestSerialIntegration_P07(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -429,7 +432,7 @@ func TestSerialIntegation_P07(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P08(t *testing.T) {
+func TestSerialIntegration_P08(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -447,7 +450,7 @@ func TestSerialIntegation_P08(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P09(t *testing.T) {
+func TestSerialIntegration_P09(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -466,7 +469,7 @@ func TestSerialIntegation_P09(t *testing.T) {
 	closePort(t, handle)
 }
 
-func TestSerialIntegation_P10(t *testing.T) {
+func TestSerialIntegration_P10(t *testing.T) {
 
 	verifySetup(t, PARAM_LOOPBACK)
 
@@ -481,6 +484,66 @@ func TestSerialIntegation_P10(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
+
+	closePort(t, handle)
+}
+
+func TestSerialIntegration_P11(t *testing.T) {
+
+	verifySetup(t, PARAM_LOOPBACK)
+
+	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+
+	buf := []byte("1 2 3 4 5 6 7 8 9 10")
+	writePort(t, handle, buf)
+	time.Sleep(500 * time.Millisecond)
+	rbuf := make([]byte, len(buf))
+	n, err := handle.Read(rbuf)
+	assert.Equal(t, len(buf), n)
+	assert.NoError(t, err)
+	assert.Equal(t, buf, rbuf)
+
+	err = handle.SetBaud(115200)
+	assert.NoError(t, err)
+	writePort(t, handle, buf)
+	time.Sleep(500 * time.Millisecond)
+	n, err = handle.Read(rbuf)
+	assert.Equal(t, len(buf), n)
+	assert.NoError(t, err)
+	assert.Equal(t, buf, rbuf)
+
+	closePort(t, handle)
+}
+
+func TestSerialIntegration_P12(t *testing.T) {
+
+	verifySetup(t, PARAM_LOOPBACK)
+
+	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+
+	// By Default its high
+	val, err := handle.Ring()
+	assert.NoError(t, err)
+	assert.Equal(t, false, val)
+
+	err = handle.SendBreak(true)
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+
+	// Signal Low
+	val, err = handle.Ring()
+	assert.NoError(t, err)
+	assert.Equal(t, true, val)
+
+	err = handle.SendBreak(false)
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+
+	val, err = handle.Ring()
+	assert.NoError(t, err)
+	assert.Equal(t, false, val)
 
 	closePort(t, handle)
 }
