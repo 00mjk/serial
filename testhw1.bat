@@ -13,3 +13,6 @@
 @pause
 @go test -v -cover -coverprofile=coverage.out -covermode=count .
 @tail -n +2 coverage.out >> coverage-all.out
+@set TEST_PORT=
+@set TEST_BAUD=
+@set TEST_LOOPBACK=

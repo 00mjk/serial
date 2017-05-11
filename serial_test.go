@@ -24,12 +24,18 @@ var sport string
 // Baud rate value
 var baudrate int
 
+// Skip on Error
+func skipTestOnError(t *testing.T, msg string) error {
+	t.Skip(msg)
+	return errors.New(msg)
+}
+
 // Function to check environment configuration
-func verifySetup(order int) error {
+func verifySetup(t *testing.T, order int) error {
 
 	sport = os.Getenv("TEST_PORT")
 	if sport == "" {
-		return errors.New("Port Name was not provided")
+		return skipTestOnError(t, "Port Name was not provided")
 	}
 
 	if order == PARAM_PORT {
@@ -38,7 +44,7 @@ func verifySetup(order int) error {
 
 	val, err := strconv.Atoi(os.Getenv("TEST_BAUD"))
 	if err != nil || val == 0 {
-		return errors.New("Baud Rate was not provided")
+		return skipTestOnError(t, "Baud Rate was not provided")
 	}
 
 	baudrate = val
@@ -48,9 +54,9 @@ func verifySetup(order int) error {
 	}
 
 	if order == PARAM_LOOPBACK {
-		notLoopback := errors.New("Not Loop Back configuration :" + os.Getenv("TEST_LOOPBACK"))
 		if os.Getenv("TEST_LOOPBACK") != "YES" {
-			return notLoopback
+			return skipTestOnError(t,
+				"Not Loop Back configuration :"+os.Getenv("TEST_LOOPBACK"))
 		}
 	}
 
@@ -59,7 +65,13 @@ func verifySetup(order int) error {
 
 // Create the Serial Port
 func createPort(t *testing.T, parity, stopbits, flow byte) (SerialInterface, error) {
-	c := &SerialConfig{Name: sport, Baud: baudrate}
+	c := &SerialConfig{
+		Name:     sport,
+		Baud:     baudrate,
+		Parity:   parity,
+		StopBits: stopbits,
+		Flow:     flow,
+	}
 	handle, err := OpenPort(c)
 	assert.NoError(t, err)
 	assert.NotNil(t, handle)
@@ -71,6 +83,14 @@ func closePort(t *testing.T, handle SerialInterface) error {
 	err := handle.Close()
 	assert.NoError(t, err)
 	return err
+}
+
+// Write Data to Port
+func writePort(t *testing.T, handle SerialInterface, data []byte) (int, error) {
+	n, err := handle.Write(data)
+	assert.Equal(t, len(data), n)
+	assert.NoError(t, err)
+	return n, err
 }
 
 /*
@@ -95,10 +115,7 @@ func TestSerialConfig_N02(t *testing.T) {
 func TestSerialConfig_N10(t *testing.T) {
 	var c *SerialConfig
 
-	err := verifySetup(PARAM_PORT)
-	if err != nil {
-		t.Skip(err)
-	}
+	verifySetup(t, PARAM_PORT)
 
 	c = &SerialConfig{Name: sport}
 	handle, err := OpenPort(c)
@@ -141,31 +158,23 @@ Positive Tests
 
 func TestSerialConfig_P01(t *testing.T) {
 
-	err := verifySetup(PARAM_BAUD)
-	if err != nil {
-		t.Skip(err)
-	}
+	verifySetup(t, PARAM_BAUD)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	handle, _ := createPort(t, ParityNone, StopBits_1, FlowNone)
 	closePort(t, handle)
 }
 
-func TestSerialConfig_P02(t *testing.T) {
+func TestSerialIntegation_P01(t *testing.T) {
 
-	err := verifySetup(PARAM_LOOPBACK)
-	if err != nil {
-		t.Skip(err)
-	}
+	verifySetup(t, PARAM_LOOPBACK)
 
 	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
-	n, err := handle.Write(buf)
-	assert.Equal(t, len(buf), n)
-	assert.NoError(t, err)
+	writePort(t, handle, buf)
 	time.Sleep(500 * time.Millisecond)
 	rbuf := make([]byte, len(buf))
-	n, err = handle.Read(rbuf)
+	n, err := handle.Read(rbuf)
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
