@@ -57,6 +57,22 @@ func verifySetup(order int) error {
 	return nil
 }
 
+// Create the Serial Port
+func createPort(t *testing.T, parity, stopbits, flow byte) (SerialInterface, error) {
+	c := &SerialConfig{Name: sport, Baud: baudrate}
+	handle, err := OpenPort(c)
+	assert.NoError(t, err)
+	assert.NotNil(t, handle)
+	return handle, err
+}
+
+// Close the Serial Port
+func closePort(t *testing.T, handle SerialInterface) error {
+	err := handle.Close()
+	assert.NoError(t, err)
+	return err
+}
+
 /*
 Negative Unit Tests
 */
@@ -124,33 +140,24 @@ Positive Tests
 */
 
 func TestSerialConfig_P01(t *testing.T) {
-	var c *SerialConfig
 
 	err := verifySetup(PARAM_BAUD)
 	if err != nil {
 		t.Skip(err)
 	}
 
-	c = &SerialConfig{Name: sport, Baud: baudrate}
-	handle, err := OpenPort(c)
-	assert.NoError(t, err)
-	assert.NotNil(t, handle)
-	err = handle.Close()
-	assert.NoError(t, err)
+	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	closePort(t, handle)
 }
 
 func TestSerialConfig_P02(t *testing.T) {
-	var c *SerialConfig
 
 	err := verifySetup(PARAM_LOOPBACK)
 	if err != nil {
 		t.Skip(err)
 	}
 
-	c = &SerialConfig{Name: sport, Baud: baudrate}
-	handle, err := OpenPort(c)
-	assert.NoError(t, err)
-	assert.NotNil(t, handle)
+	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	n, err := handle.Write(buf)
@@ -163,6 +170,5 @@ func TestSerialConfig_P02(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
 
-	err = handle.Close()
-	assert.NoError(t, err)
+	closePort(t, handle)
 }
