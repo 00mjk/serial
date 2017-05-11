@@ -7,6 +7,7 @@ import (
 	"unsafe"
 	"strconv"
 	"log"
+	"errors"
 )
 
 type structDCB struct {
@@ -208,6 +209,10 @@ func wSetCommState(h syscall.Handle, baud int, stopbits byte, parity byte, flow 
 
 	log.Println("Byte val of commstat flags[0]:", strconv.FormatInt(int64(params.flags[0]), 2))
 	log.Println("Byte val of commstat flags[1]:", strconv.FormatInt(int64(params.flags[1]), 2))
+
+	if baud == 0 || baud < 0 {
+		return errors.New("Error in Baudrate " + string(baud))
+	}
 
 	params.BaudRate = uint32(baud)
 	params.Parity = parityMap[parity]

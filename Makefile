@@ -1,15 +1,6 @@
 # Makefile for testing
 
-# For Export of Environmental variables
-ifeq ($(OS),Windows_NT)
-	EXP=set
-	BRK=@pause
-else
-	EXP=export
-	BRK=@read
-endif
-
-PORT=COM3
+PORT=/dev/ttyUSB0
 BAUD=9600
 
 # Get all Packages in current directory
@@ -40,22 +31,25 @@ hardwaresetup1:
 	@echo .
 	@echo . Hardware Test Section 1
 	@echo .
-	$(EXP) TEST_PORT=$(PORT)
-	$(EXP) TEST_BAUD=$(BAUD)
-	$(EXP) TEST_RTS_CTS=YES
-	$(EXP) TEST_DTR_DSR=YES
-	$(EXP) TEST_LOOPBACK=YES
+	export TEST_PORT=$(PORT)
+	export TEST_BAUD=$(BAUD)
+	export TEST_LOOPBACK=YES
+	@echo .
+	@echo . SERIAL PORT SETUP
+	@echo .
+	@echo ". TX  <=> RX  Short"
+	@echo ". CTS <=> RTS Short"
+	@echo ". DTR <=> DSR Short"
 	@echo .
 	@echo . Configure this setup and Press Enter to continue
-	$(BRK)
+	@echo .
+	read
 	@echo .
 
-hardwaretest1: hardwaresetup1
-	$(MAKE) test
+hardwaretest1: hardwaresetup1 test
 	@echo .
 
-hardwaretest1cover: hardwaresetup1
-	$(MAKE) cover
+hardwaretest1cover: hardwaresetup1 cover
 	@echo .
 
 
