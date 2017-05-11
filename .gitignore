@@ -25,3 +25,7 @@ _testmain.go
 
 #intellij Idea
 .idea
+
+# Code Coverage Ignored
+coverage.out
+coverage-all.out

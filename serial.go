@@ -22,6 +22,7 @@ import (
 	"errors"
 	"io"
 	"time"
+	"strconv"
 )
 
 /*
@@ -33,9 +34,9 @@ const DataSize byte = 8
 Specific Stop bits type
 */
 const (
-	StopBits_1   byte = 1
-	StopBits_1_5 byte = 15 // 1.5 Stop Bits
-	StopBits_2   byte = 2
+	StopBits_1   byte = iota
+	StopBits_1_5 byte = iota // 1.5 Stop Bits
+	StopBits_2   byte = iota
 )
 
 /*
@@ -98,4 +99,34 @@ Function to Create the Serial Port and return an Interface type enclosing the co
 */
 func OpenPort(cfg *SerialConfig) (SerialInterface, error) {
 	return openPort(cfg)
+}
+
+// Internal function for Logging of Stop bits
+func stopBitStr(s byte) string {
+	if s == StopBits_1 {
+		return "1"
+	} else if s == StopBits_1_5 {
+		return "1.5"
+	} else if s == StopBits_2 {
+		return "2"
+	} else {
+		return "Unknown " + strconv.Itoa(int(s))
+	}
+}
+
+// Internal function for Logging Parity bits
+func parityStr(p byte) string {
+	if p == ParityNone {
+		return "N"
+	} else if p == ParityEven {
+		return "E"
+	} else if p == ParityOdd {
+		return "O"
+	} else if p == ParityMark {
+		return "MARK"
+	} else if p == ParitySpace {
+		return "SPACE"
+	} else {
+		return "Unknown " + strconv.Itoa(int(p))
+	}
 }
