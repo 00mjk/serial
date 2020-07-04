@@ -3,7 +3,6 @@ package goembserial
 import (
 	"errors"
 	"os"
-	"runtime"
 	"strconv"
 	"testing"
 	"time"
@@ -521,37 +520,38 @@ func TestSerialIntegration_P11(t *testing.T) {
 	assert.Equal(t, buf, rbuf)
 }
 
-func TestSerialIntegration_P12(t *testing.T) {
-	if runtime.GOOS == "linux" {
-		t.Skipf("Does not Work in Linux")
-	}
+//// Test Deprecated Since it only works for specific USB to Serial Converters
+// func TestSerialIntegration_P12(t *testing.T) {
+// 	if runtime.GOOS == "linux" {
+// 		t.Skipf("Does not Work in Linux")
+// 	}
 
-	verifySetup(t, paramLOOPBACK)
+// 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
-	defer closePort(t, handle)
+// 	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+// 	defer closePort(t, handle)
 
-	// By Default its high
-	val, err := handle.Ring()
-	assert.NoError(t, err)
-	assert.Equal(t, false, val)
+// 	// By Default its high
+// 	val, err := handle.Ring()
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, false, val)
 
-	err = handle.SendBreak(true)
-	assert.NoError(t, err)
+// 	err = handle.SendBreak(true)
+// 	assert.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+// 	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
 
-	// Signal Low
-	val, err = handle.Ring()
-	assert.NoError(t, err)
-	assert.Equal(t, true, val)
+// 	// Signal Low
+// 	val, err = handle.Ring()
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, true, val)
 
-	err = handle.SendBreak(false)
-	assert.NoError(t, err)
+// 	err = handle.SendBreak(false)
+// 	assert.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+// 	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
 
-	val, err = handle.Ring()
-	assert.NoError(t, err)
-	assert.Equal(t, false, val)
-}
+// 	val, err = handle.Ring()
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, false, val)
+// }
