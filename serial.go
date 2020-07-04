@@ -32,7 +32,6 @@ package goembserial
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"strconv"
 	"time"
@@ -91,16 +90,7 @@ Default Error Types returned
 
 //var ErrNotImplemented error = errors.New("Not Implemented yet")
 
-var (
-	// ErrPortNotInitialized -
-	ErrPortNotInitialized error = errors.New("Port not initialized or closed")
-	// ErrNotOpen -
-	ErrNotOpen = fmt.Errorf("Error Port Not Open")
-	// ErrAlreadyOpen -
-	ErrAlreadyOpen = fmt.Errorf("Error Port is Already Open")
-	// ErrAccessDenied -
-	ErrAccessDenied = fmt.Errorf("Access Denied")
-)
+var ErrPortNotInitialized error = errors.New("Port not initialized or closed")
 
 /*
 Serial Port Interface Type for Multi platform implementation
