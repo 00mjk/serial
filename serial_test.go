@@ -2,17 +2,18 @@ package goembserial
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
-	PARAM_PORT     = 1
-	PARAM_BAUD     = PARAM_PORT + 1
-	PARAM_LOOPBACK = PARAM_BAUD + 1
+	paramPORT     = 1
+	paramBAUD     = paramPORT + 1
+	paramLOOPBACK = paramBAUD + 1
 )
 
 // Serial Port String
@@ -35,7 +36,7 @@ func verifySetup(t *testing.T, order int) error {
 		return skipTestOnError(t, "Port Name was not provided")
 	}
 
-	if order == PARAM_PORT {
+	if order == paramPORT {
 		return nil
 	}
 
@@ -46,11 +47,11 @@ func verifySetup(t *testing.T, order int) error {
 
 	baudrate = val
 
-	if order == PARAM_BAUD {
+	if order == paramBAUD {
 		return nil
 	}
 
-	if order == PARAM_LOOPBACK {
+	if order == paramLOOPBACK {
 		if os.Getenv("TEST_LOOPBACK") != "YES" {
 			return skipTestOnError(t, "Not in Loop Back configuration")
 		}
@@ -98,6 +99,7 @@ func TestSerialConfig_N01(t *testing.T) {
 	handle, err := OpenPort(c)
 	assert.Nil(t, handle)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func TestSerialConfig_N02(t *testing.T) {
@@ -106,6 +108,7 @@ func TestSerialConfig_N02(t *testing.T) {
 	handle, err := OpenPort(c)
 	assert.Nil(t, handle)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func TestSerialConfig_N03(t *testing.T) {
@@ -121,12 +124,13 @@ func TestSerialConfig_N04(t *testing.T) {
 func TestSerialConfig_N05(t *testing.T) {
 	var c *SerialConfig
 
-	verifySetup(t, PARAM_PORT)
+	verifySetup(t, paramPORT)
 
 	c = &SerialConfig{Name: sport}
 	handle, err := OpenPort(c)
 	assert.Error(t, err)
 	assert.Nil(t, handle)
+	t.Logf("Error - %v", err)
 	if err == nil {
 		handle.Close()
 	}
@@ -134,7 +138,7 @@ func TestSerialConfig_N05(t *testing.T) {
 
 func TestSerialIntegration_N01(t *testing.T) {
 
-	verifySetup(t, PARAM_BAUD)
+	verifySetup(t, paramBAUD)
 
 	c := &SerialConfig{
 		Name:     sport,
@@ -148,6 +152,7 @@ func TestSerialIntegration_N01(t *testing.T) {
 	//t.Log(err)
 	assert.Error(t, err)
 	assert.Nil(t, handle)
+	t.Logf("Error - %v", err)
 	if err == nil {
 		handle.Close()
 	}
@@ -163,6 +168,7 @@ func Test_serialPort_N01(t *testing.T) {
 	n, err := handle.Read(buf)
 	assert.Equal(t, 0, n)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N02(t *testing.T) {
@@ -171,24 +177,28 @@ func Test_serialPort_N02(t *testing.T) {
 	n, err := handle.Write(buf)
 	assert.Equal(t, 0, n)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N03(t *testing.T) {
 	handle := serialPort{}
 	err := handle.Close()
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N04(t *testing.T) {
 	handle := serialPort{}
 	err := handle.Rts(true)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N05(t *testing.T) {
 	handle := serialPort{}
 	err := handle.Dtr(true)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N06(t *testing.T) {
@@ -196,6 +206,7 @@ func Test_serialPort_N06(t *testing.T) {
 	val, err := handle.Cts()
 	assert.Equal(t, val, false)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N07(t *testing.T) {
@@ -203,6 +214,7 @@ func Test_serialPort_N07(t *testing.T) {
 	val, err := handle.Dsr()
 	assert.Equal(t, val, false)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N08(t *testing.T) {
@@ -210,24 +222,28 @@ func Test_serialPort_N08(t *testing.T) {
 	val, err := handle.Ring()
 	assert.Equal(t, val, false)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N09(t *testing.T) {
 	handle := serialPort{}
 	err := handle.SignalInvert(true)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N10(t *testing.T) {
 	handle := serialPort{}
 	err := handle.SetBaud(9600)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 func Test_serialPort_N11(t *testing.T) {
 	handle := serialPort{}
 	err := handle.SendBreak(true)
 	assert.Error(t, err)
+	t.Logf("Error - %v", err)
 }
 
 /*
@@ -236,7 +252,7 @@ Positive Tests
 
 func TestSerialConfig_P01(t *testing.T) {
 
-	verifySetup(t, PARAM_BAUD)
+	verifySetup(t, paramBAUD)
 
 	handle, _ := createPort(t, ParityNone, StopBits_1, FlowNone)
 	closePort(t, handle)
@@ -244,9 +260,10 @@ func TestSerialConfig_P01(t *testing.T) {
 
 func TestSerialIntegration_P01(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	writePort(t, handle, buf)
@@ -256,15 +273,14 @@ func TestSerialIntegration_P01(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P02(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	defer closePort(t, handle)
 
 	// By default RTS is ON
 	val, err := handle.Cts()
@@ -306,15 +322,14 @@ func TestSerialIntegration_P02(t *testing.T) {
 	val, err = handle.Cts()
 	assert.NoError(t, err)
 	assert.Equal(t, false, val)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P03(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	defer closePort(t, handle)
 
 	// By default DTR is ON
 	val, err := handle.Dsr()
@@ -356,15 +371,14 @@ func TestSerialIntegration_P03(t *testing.T) {
 	val, err = handle.Dsr()
 	assert.NoError(t, err)
 	assert.Equal(t, false, val)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P04(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityOdd, StopBits_1, FlowNone)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	writePort(t, handle, buf)
@@ -374,15 +388,14 @@ func TestSerialIntegration_P04(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P05(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityEven, StopBits_1, FlowNone)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	writePort(t, handle, buf)
@@ -392,15 +405,14 @@ func TestSerialIntegration_P05(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P06(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParitySpace, StopBits_1, FlowNone)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	writePort(t, handle, buf)
@@ -410,15 +422,14 @@ func TestSerialIntegration_P06(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P07(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityMark, StopBits_1, FlowNone)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	writePort(t, handle, buf)
@@ -428,15 +439,14 @@ func TestSerialIntegration_P07(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P08(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityNone, StopBits_2, FlowNone)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	writePort(t, handle, buf)
@@ -446,18 +456,17 @@ func TestSerialIntegration_P08(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P09(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityNone, StopBits_1, FlowHardware)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
-	handle.Rts(false)
+	// handle.Rts(false) - Since Hardware Flow Control is Enabled
 	writePort(t, handle, buf)
 	time.Sleep(500 * time.Millisecond)
 	rbuf := make([]byte, len(buf))
@@ -465,15 +474,14 @@ func TestSerialIntegration_P09(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P10(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityNone, StopBits_1, FlowSoft)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	handle.Rts(false)
@@ -484,15 +492,14 @@ func TestSerialIntegration_P10(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
 func TestSerialIntegration_P11(t *testing.T) {
 
-	verifySetup(t, PARAM_LOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
 	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
 	writePort(t, handle, buf)
@@ -511,39 +518,40 @@ func TestSerialIntegration_P11(t *testing.T) {
 	assert.Equal(t, len(buf), n)
 	assert.NoError(t, err)
 	assert.Equal(t, buf, rbuf)
-
-	closePort(t, handle)
 }
 
-func TestSerialIntegration_P12(t *testing.T) {
+//// Test Deprecated Since it only works for specific USB to Serial Converters
+// func TestSerialIntegration_P12(t *testing.T) {
+// 	if runtime.GOOS == "linux" {
+// 		t.Skipf("Does not Work in Linux")
+// 	}
 
-	verifySetup(t, PARAM_LOOPBACK)
+// 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+// 	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+// 	defer closePort(t, handle)
 
-	// By Default its high
-	val, err := handle.Ring()
-	assert.NoError(t, err)
-	assert.Equal(t, false, val)
+// 	// By Default its high
+// 	val, err := handle.Ring()
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, false, val)
 
-	err = handle.SendBreak(true)
-	assert.NoError(t, err)
+// 	err = handle.SendBreak(true)
+// 	assert.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+// 	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
 
-	// Signal Low
-	val, err = handle.Ring()
-	assert.NoError(t, err)
-	assert.Equal(t, true, val)
+// 	// Signal Low
+// 	val, err = handle.Ring()
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, true, val)
 
-	err = handle.SendBreak(false)
-	assert.NoError(t, err)
+// 	err = handle.SendBreak(false)
+// 	assert.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+// 	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
 
-	val, err = handle.Ring()
-	assert.NoError(t, err)
-	assert.Equal(t, false, val)
-
-	closePort(t, handle)
-}
+// 	val, err = handle.Ring()
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, false, val)
+// }
