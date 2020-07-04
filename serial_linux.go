@@ -31,13 +31,15 @@ type serialPort struct {
 // Platform Specific Open Port Function
 func openPort(cfg *SerialConfig) (SerialInterface, error) {
 	s := &serialPort{}
-	// Open Port
-	err := s.OpenPort(cfg.Name)
+
+	// Interpret the Config for Potential Errors
+	t, err := getTermiosFor(cfg)
 	if err != nil {
 		return nil, err
 	}
-	// Get the Config
-	t, err := getTermiosFor(cfg)
+
+	// Open Port
+	err = s.OpenPort(cfg.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +171,8 @@ func (s *serialPort) Close() error {
 
 	// Check If its Open
 	if !s.opened {
-		return nil
+		return ErrPortNotInitialized
+		// return nil
 	}
 
 	// Auto Run at the End of the function
@@ -475,13 +478,13 @@ func (s *serialPort) SetModemSignal(status int) (err error) {
 }
 
 func linuxFindBaud(baud int) (int, error) {
-	if baud < 0 || baud == 0 {
-		return unix.B9600, nil
-	}
+	// if baud < 0 || baud == 0 {
+	// 	return unix.B9600, nil
+	// }
 	baudRate := unix.B9600
 	// Check Baud Rate
 	switch baud {
-	case 0: // Default Baud rate 9600
+	// case 0: // Default Baud rate 9600
 	case 300:
 		baudRate = unix.B300
 	case 600:
@@ -570,8 +573,8 @@ func getTermiosFor(cfg *SerialConfig) (unix.Termios, error) {
 	t.Cflag &^= unix.CSTOPB
 	switch cfg.StopBits {
 	case StopBits_1:
-	case StopBits_1_5:
-		t.Cflag |= unix.CSTOPB // Do a 2 bit even for 1.5bit
+	// case StopBits_1_5:
+	// 	t.Cflag |= unix.CSTOPB // Do a 2 bit even for 1.5bit
 	case StopBits_2:
 		t.Cflag |= unix.CSTOPB
 	default:
