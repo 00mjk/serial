@@ -2,9 +2,21 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # Makefile for testing
+# Windows Specifics
+ifeq ($(OS),Windows_NT)
+# Set the Port where DUT is attached
+PORT=COM3
+# To Pause for User Input
+BRK=pause
+else
+# Linux Specifics
 
 # Set the Port where DUT is attached
 PORT=/dev/ttyUSB0
+# To Pause for User Input
+BRK=read
+endif
+
 # The default baud-rate that would be used to test out the DUT
 BAUD=9600
 # If we are ready with the require loop back setup to run the Tests
@@ -51,7 +63,7 @@ hwsetup:
 	@echo .
 	@echo . Configure this setup and Press Enter to continue
 	@echo .
-	read
+	$(BRK)
 	@echo .
 
 # Trick to Do a combined Coverage file
