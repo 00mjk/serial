@@ -572,10 +572,10 @@ func getTermiosFor(cfg *SerialConfig) (unix.Termios, error) {
 	// Set Stop Bits
 	t.Cflag &^= unix.CSTOPB
 	switch cfg.StopBits {
-	case StopBits_1:
+	case StopBits1:
 	// case StopBits_1_5:
 	// 	t.Cflag |= unix.CSTOPB // Do a 2 bit even for 1.5bit
-	case StopBits_2:
+	case StopBits2:
 		t.Cflag |= unix.CSTOPB
 	default:
 		return unix.Termios{}, fmt.Errorf("Invalid or not supported Stop Bits")

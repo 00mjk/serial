@@ -1,33 +1,33 @@
-/*
+// Copyright (C) 2020 Abhijit Bose
+// SPDX-License-Identifier: GPL-2.0-only
 
-GoEmbSerial is Embedded focused serial port package that allows you to read, write
-and configure the serial port.
-
-This project draws inspiration from the github.com/tarm/serial package
-and github.com/johnlauer/goserial package
-
-Initially this project aims to provide API and compatibility for windows.
-As time progresses other architectures would be added.
-
-This library is Context based and performs read write asynchronously.
-
-By default this package uses 8 bits (byte) data format for exchange.
-
-Note: Baud rates are defined as OS specifics
-
-Currently Following Features are supported:
-
- 1. All types of BAUD rates
- 2. Flow Control - Hardware, Software (XON/XOFF)
- 3. RTS , DTR control
- 4. CTS , DSR, RING read back
- 5. Parity Control - Odd, Even, Mark, Space
- 6. Stop Bit Control - 1 bit and 2 bits
- 7. Hardware to Software Signal Inversion for all Signals RTS, CTS, DTR, DSR
- 8. Sending Break from TX line
- X. ... More on the way ...
-
-*/
+// Package goembserial or GoEmbSerial is Embedded focused serial port package that allows you to read, write
+// and configure the serial port.
+//
+// This project draws inspiration from the github.com/tarm/serial package
+// and github.com/johnlauer/goserial package
+//
+// Initially this project aims to provide API and compatibility for windows.
+// As time progresses other architectures would be added.
+//
+// This library is Context based and performs read write asynchronously.
+//
+// By default this package uses 8 bits (byte) data format for exchange.
+//
+// Note: Baud rates are defined as OS specifics
+//
+// Currently Following Features are supported:
+//
+//  1. All types of BAUD rates
+//  2. Flow Control - Hardware, Software (XON/XOFF)
+//  3. RTS , DTR control
+//  4. CTS , DSR, RING read back
+//  5. Parity Control - Odd, Even, Mark, Space
+//  6. Stop Bit Control - 1 bit and 2 bits
+//  7. Hardware to Software Signal Inversion for all Signals RTS, CTS, DTR, DSR
+//  8. Sending Break from TX line
+//  X. ... More on the way ...
+//
 package goembserial
 
 import (
@@ -38,18 +38,17 @@ import (
 	"time"
 )
 
-/*
-Data size is always 8-bits
-*/
+// DataSize defines the unit data size in bits used for Serial communication
 const DataSize byte = 8
 
-/*
-Specific Stop bits type
-*/
+// Specific Stop bits type
 const (
-	StopBits_1   byte = iota
-	StopBits_1_5 byte = iota // 1.5 Stop Bits
-	StopBits_2   byte = iota
+	// StopBits1 defines a single Stop bit sent after every data unit block
+	StopBits1 byte = iota
+	// StopBits15 defines a 1 and 1/2 Stop bits sent after every data unit block
+	StopBits15 byte = iota // 1.5 Stop Bits
+	// StopBits2 defines a 2 Stop bits sent after every data unit block
+	StopBits2 byte = iota
 )
 
 /*
@@ -126,11 +125,11 @@ func OpenPort(cfg *SerialConfig) (SerialInterface, error) {
 
 // Internal function for Logging of Stop bits
 func stopBitStr(s byte) string {
-	if s == StopBits_1 {
+	if s == StopBits1 {
 		return "1"
-	} else if s == StopBits_1_5 {
+	} else if s == StopBits15 {
 		return "1.5"
-	} else if s == StopBits_2 {
+	} else if s == StopBits2 {
 		return "2"
 	} else {
 		return "Unknown " + strconv.Itoa(int(s))

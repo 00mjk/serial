@@ -96,9 +96,9 @@ Stop Bit Conversion map for Windows
 */
 var (
 	stopbitMap = map[byte]byte{
-		StopBits_1: 0,
-		//		StopBits_1_5: 1,
-		StopBits_2: 2,
+		StopBits1: 0,
+		//		StopBits15: 1,
+		StopBits2: 2,
 	}
 )
 
@@ -250,7 +250,7 @@ func wSetCommState(h syscall.Handle, baud int, stopbits byte, parity byte, flow 
 		return errors.New("Error in Baudrate " + string(baud))
 	}
 
-	if stopbits == StopBits_1_5 {
+	if stopbits == StopBits15 {
 		return errors.New("Stopbits " + stopBitStr(stopbits) + " Not supported by many serial ports")
 	}
 

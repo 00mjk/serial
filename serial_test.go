@@ -112,7 +112,7 @@ func TestSerialConfig_N02(t *testing.T) {
 }
 
 func TestSerialConfig_N03(t *testing.T) {
-	s := stopBitStr(StopBits_2 + 1)
+	s := stopBitStr(StopBits2 + 1)
 	assert.Contains(t, s, "Unknown")
 }
 
@@ -144,7 +144,7 @@ func TestSerialIntegration_N01(t *testing.T) {
 		Name:     sport,
 		Baud:     baudrate,
 		Parity:   ParityNone,
-		StopBits: StopBits_1_5,
+		StopBits: StopBits15,
 		Flow:     FlowNone,
 	}
 
@@ -254,7 +254,7 @@ func TestSerialConfig_P01(t *testing.T) {
 
 	verifySetup(t, paramBAUD)
 
-	handle, _ := createPort(t, ParityNone, StopBits_1, FlowNone)
+	handle, _ := createPort(t, ParityNone, StopBits1, FlowNone)
 	closePort(t, handle)
 }
 
@@ -262,7 +262,7 @@ func TestSerialIntegration_P01(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	handle, err := createPort(t, ParityNone, StopBits1, FlowNone)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
@@ -279,7 +279,7 @@ func TestSerialIntegration_P02(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	handle, err := createPort(t, ParityNone, StopBits1, FlowNone)
 	defer closePort(t, handle)
 
 	// By default RTS is ON
@@ -328,7 +328,7 @@ func TestSerialIntegration_P03(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	handle, err := createPort(t, ParityNone, StopBits1, FlowNone)
 	defer closePort(t, handle)
 
 	// By default DTR is ON
@@ -377,7 +377,7 @@ func TestSerialIntegration_P04(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityOdd, StopBits_1, FlowNone)
+	handle, err := createPort(t, ParityOdd, StopBits1, FlowNone)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
@@ -394,7 +394,7 @@ func TestSerialIntegration_P05(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityEven, StopBits_1, FlowNone)
+	handle, err := createPort(t, ParityEven, StopBits1, FlowNone)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
@@ -411,7 +411,7 @@ func TestSerialIntegration_P06(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParitySpace, StopBits_1, FlowNone)
+	handle, err := createPort(t, ParitySpace, StopBits1, FlowNone)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
@@ -428,7 +428,7 @@ func TestSerialIntegration_P07(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityMark, StopBits_1, FlowNone)
+	handle, err := createPort(t, ParityMark, StopBits1, FlowNone)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
@@ -445,7 +445,7 @@ func TestSerialIntegration_P08(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_2, FlowNone)
+	handle, err := createPort(t, ParityNone, StopBits2, FlowNone)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
@@ -462,7 +462,7 @@ func TestSerialIntegration_P09(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowHardware)
+	handle, err := createPort(t, ParityNone, StopBits1, FlowHardware)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
@@ -480,7 +480,7 @@ func TestSerialIntegration_P10(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowSoft)
+	handle, err := createPort(t, ParityNone, StopBits1, FlowSoft)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
@@ -498,7 +498,7 @@ func TestSerialIntegration_P11(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
 
-	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
+	handle, err := createPort(t, ParityNone, StopBits1, FlowNone)
 	defer closePort(t, handle)
 
 	buf := []byte("1 2 3 4 5 6 7 8 9 10")
