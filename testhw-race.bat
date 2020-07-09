@@ -4,10 +4,13 @@
 @echo .
 @echo . SERIAL PORT SETUP
 @echo .
-@echo ". TX  <=> RX  Short"
-@echo ". CTS <=> RTS Short"
-@echo ". DTR <=> DSR Short"
-@echo ". TX  <=> RI  Short for break test"
+@echo ". TX  <===> RX  Short"
+@echo ". RTS <=+=> CTS Short"
+@echo ".       |"
+@echo ".       +=> RI  Short (Connected to RTS for Testing)"
+@echo ". DTR <=+=> DSR Short"
+@echo ".       |"
+@echo ".       +=> DCD Short (Connected to DTR for Testing)"
 @echo .
 @echo . Configure this setup and Press Enter to continue
 @echo .

@@ -520,38 +520,72 @@ func TestSerialIntegration_P11(t *testing.T) {
 	assert.Equal(t, buf, rbuf)
 }
 
-//// Test Deprecated Since it only works for specific USB to Serial Converters
-// func TestSerialIntegration_P12(t *testing.T) {
-// 	if runtime.GOOS == "linux" {
-// 		t.Skipf("Does not Work in Linux")
-// 	}
+func TestSerialIntegration_P12(t *testing.T) {
 
-// 	verifySetup(t, paramLOOPBACK)
+	verifySetup(t, paramLOOPBACK)
 
-// 	handle, err := createPort(t, ParityNone, StopBits_1, FlowNone)
-// 	defer closePort(t, handle)
+	handle, err := createPort(t, ParityNone, StopBits1, FlowNone)
+	defer closePort(t, handle)
 
-// 	// By Default its high
-// 	val, err := handle.Ring()
-// 	assert.NoError(t, err)
-// 	assert.Equal(t, false, val)
+	err = handle.Rts(false)
+	assert.NoError(t, err)
 
-// 	err = handle.SendBreak(true)
-// 	assert.NoError(t, err)
+	// By Default its high
+	val, err := handle.Ring()
+	assert.NoError(t, err)
+	assert.Equal(t, false, val)
 
-// 	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+	err = handle.Rts(true)
+	assert.NoError(t, err)
 
-// 	// Signal Low
-// 	val, err = handle.Ring()
-// 	assert.NoError(t, err)
-// 	assert.Equal(t, true, val)
+	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
 
-// 	err = handle.SendBreak(false)
-// 	assert.NoError(t, err)
+	// Signal Low
+	val, err = handle.Ring()
+	assert.NoError(t, err)
+	assert.Equal(t, true, val)
 
-// 	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+	err = handle.Rts(false)
+	assert.NoError(t, err)
 
-// 	val, err = handle.Ring()
-// 	assert.NoError(t, err)
-// 	assert.Equal(t, false, val)
-// }
+	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+
+	val, err = handle.Ring()
+	assert.NoError(t, err)
+	assert.Equal(t, false, val)
+}
+
+func TestSerialIntegration_P13(t *testing.T) {
+
+	verifySetup(t, paramLOOPBACK)
+
+	handle, err := createPort(t, ParityNone, StopBits1, FlowNone)
+	defer closePort(t, handle)
+
+	err = handle.Dtr(false)
+	assert.NoError(t, err)
+
+	// By Default its high
+	val, err := handle.Dsr()
+	assert.NoError(t, err)
+	assert.Equal(t, false, val)
+
+	err = handle.Dtr(true)
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+
+	// Signal Low
+	val, err = handle.Dsr()
+	assert.NoError(t, err)
+	assert.Equal(t, true, val)
+
+	err = handle.Dtr(false)
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond) // Minimum Wait Time
+
+	val, err = handle.Dsr()
+	assert.NoError(t, err)
+	assert.Equal(t, false, val)
+}
