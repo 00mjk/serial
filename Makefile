@@ -6,15 +6,11 @@
 ifeq ($(OS),Windows_NT)
 # Set the Port where DUT is attached
 PORT=COM3
-# To Pause for User Input
-BRK=pause
 else
 # Linux Specifics
 
 # Set the Port where DUT is attached
 PORT=/dev/ttyUSB0
-# To Pause for User Input
-BRK=read
 endif
 
 # The default baud-rate that would be used to test out the DUT
@@ -58,7 +54,7 @@ hwsetup:
 	@echo .
 	export TEST_PORT=$(PORT)
 	export TEST_BAUD=$(BAUD)
-	export TEST_LOOPBACK=YES
+	export TEST_LOOPBACK=$(LOOPBACK)
 	@echo .
 	@echo . SERIAL PORT SETUP
 	@echo .
@@ -68,7 +64,7 @@ hwsetup:
 	@echo .
 	@echo . Configure this setup and Press Enter to continue
 	@echo .
-	$(BRK)
+	@read
 	@echo .
 
 # Trick to Do a combined Coverage file

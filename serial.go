@@ -31,7 +31,6 @@
 package goembserial
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -51,9 +50,9 @@ const (
 	StopBits2 byte = iota
 )
 
-/*
-Parity Types
-*/
+//
+// Parity Constants
+//
 const (
 	ParityNone  byte = iota
 	ParityOdd   byte = iota
@@ -62,18 +61,18 @@ const (
 	ParitySpace byte = iota
 )
 
-/*
-Synchronization Type
-*/
+// Synchronization Constants
+
 const (
-	FlowNone     byte = iota
+	// FlowNone for no flow control to be used for Serial port
+	FlowNone byte = iota
+	// FlowHardware for CTS / RTS base Hardware flow control to be used for Serial port
 	FlowHardware byte = iota
-	FlowSoft     byte = iota // XON / XOFF based - Not Supported
+	// FlowSoft for Software flow control to be used for Serial port
+	FlowSoft byte = iota // XON / XOFF based - Not Supported
 )
 
-/*
-Serial Port configuration Storage Type
-*/
+// SerialConfig store's the given Serial Port configuration
 type SerialConfig struct {
 	Name         string
 	Baud         int
@@ -84,15 +83,13 @@ type SerialConfig struct {
 	SignalInvert bool // Option to invert the RTS/CTS/DTR/DSR Read outs
 }
 
-/*
-Default Error Types returned
-*/
-
-//var ErrNotImplemented error = errors.New("Not Implemented yet")
+// Default Errors
 
 var (
+	// ErrNotImplemented -
+	ErrNotImplemented = fmt.Errorf("Not Implemented yet")
 	// ErrPortNotInitialized -
-	ErrPortNotInitialized error = errors.New("Port not initialized or closed")
+	ErrPortNotInitialized = fmt.Errorf("Port not initialized or closed")
 	// ErrNotOpen -
 	ErrNotOpen = fmt.Errorf("Error Port Not Open")
 	// ErrAlreadyOpen -
@@ -101,9 +98,7 @@ var (
 	ErrAccessDenied = fmt.Errorf("Access Denied")
 )
 
-/*
-Serial Port Interface Type for Multi platform implementation
-*/
+// SerialInterface Type for Multi platform implementation of Serial port functionality
 type SerialInterface interface {
 	io.ReadWriteCloser
 	Rts(en bool) (err error)
@@ -116,9 +111,7 @@ type SerialInterface interface {
 	SendBreak(en bool) (err error)
 }
 
-/*
-Function to Create the Serial Port and return an Interface type enclosing the configuration
-*/
+// OpenPort is a Function to Create the Serial Port and return an Interface type enclosing the configuration
 func OpenPort(cfg *SerialConfig) (SerialInterface, error) {
 	return openPort(cfg)
 }
