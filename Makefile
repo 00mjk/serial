@@ -32,20 +32,25 @@ PACKAGES = $(shell find ./ -type d -not -path '*/\.*')
 
 test: hwsetup
 	$(TEST_CMD) -v .
+	go clean -testcache
 
 cover-count-start:
 	echo "mode: count" > coverage-all.out
+	go clean -testcache
 
 cover-count: hwsetup
 	$(TEST_CMD) -v -cover -coverprofile=coverage.out -covermode=count .
 	tail -n +2 coverage.out >> coverage-all.out
+	go clean -testcache
 
 cover: hwsetup
 	$(TEST_CMD)	-v -cover -coverprofile=coverage.out .
 	go tool cover -html=coverage.out
+	go clean -testcache
 
 cover-all:
 	go tool cover -html=coverage-all.out
+	go clean -testcache
 
 hwsetup:
 	@echo .
@@ -73,6 +78,7 @@ test-cover-html:
 		go test -coverprofile=coverage.out -covermode=count $(pkg);\
 		tail -n +2 coverage.out >> coverage-all.out;)
 	go tool cover -html=coverage-all.out
+	go clean -testcache
 
 
 .PHONY: test cover-count-start cover cover-count cover-all test-cover-html
