@@ -52,13 +52,10 @@ func openPort(cfg *SerialConfig) (SerialInterface, error) {
 
 	// Set the Configuration
 	s.conf = *cfg
-	err = s.SignalInvert(cfg.SignalInvert)
-	if err != nil {
-		return nil, err
-	}
+	s.SignalInvert(cfg.SignalInvert) // No Errors Expected here
 
 	// Finally Success
-	return s, nil
+	return s, err
 }
 
 func (s *serialPort) OpenPort(name string) error {
