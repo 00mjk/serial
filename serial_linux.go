@@ -39,7 +39,7 @@ func openPort(cfg *SerialConfig) (SerialInterface, error) {
 	}
 
 	// Open Port
-	err = s.OpenPort(cfg.Name)
+	err = s.Open(cfg.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func openPort(cfg *SerialConfig) (SerialInterface, error) {
 	return s, err
 }
 
-func (s *serialPort) OpenPort(name string) error {
+func (s *serialPort) Open(name string) error {
 	// Establish Lock
 	s.mx.Lock()
 	defer s.mx.Unlock()
