@@ -44,6 +44,15 @@ func openPort(cfg *SerialConfig) (SerialInterface, error) {
 		return nil, err
 	}
 
+	// Auto Close on Errors
+	defer func(fd int, err error) {
+		if fd != 0 && err != nil {
+			unix.Close(fd)
+			s.fd = 0 // Not Initialized state
+			s.opened = false
+		}
+	}(s.fd, err)
+
 	// Set Terminos
 	err = s.SetTermios(t)
 	if err != nil {
@@ -53,6 +62,12 @@ func openPort(cfg *SerialConfig) (SerialInterface, error) {
 	// Set the Configuration
 	s.conf = *cfg
 	s.SignalInvert(cfg.SignalInvert) // No Errors Expected here
+
+	// Set Non-Blocking for Timeout and Blocking Purposes
+	err = unix.SetNonblock(s.fd, false)
+	if err != nil {
+		return nil, err
+	}
 
 	// Finally Success
 	return s, err

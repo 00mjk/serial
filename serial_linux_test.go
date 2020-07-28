@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"testing"
+	"time"
 
 	"golang.org/x/sys/unix"
 )
@@ -435,11 +436,12 @@ func TestReadWithoutWrite(t *testing.T) {
 
 	// Open the Standard Port Config
 	ref, err := OpenPort(&SerialConfig{
-		Name:     cfg.PortName,
-		Baud:     cfg.BaudRate,
-		Flow:     FlowNone,
-		Parity:   ParityNone,
-		StopBits: StopBits1,
+		Name:        cfg.PortName,
+		Baud:        cfg.BaudRate,
+		Flow:        FlowNone,
+		Parity:      ParityNone,
+		StopBits:    StopBits1,
+		ReadTimeout: 10 * time.Millisecond, // To Timeout the Operation If needed
 	})
 	if err != nil {
 		t.Errorf("Error in Opening Port - %v", err)
@@ -449,9 +451,14 @@ func TestReadWithoutWrite(t *testing.T) {
 	// Attempt Read
 	buf := make([]byte, 100)
 	n, err := ref.Read(buf)
-	t.Logf("Info Expected Error in Empty Queue - %v", err)
-	if err == nil {
-		t.Errorf("Expected Error but got NIL instead")
+	t.Logf("Info Expected No Error in Empty Queue - %v", err)
+	// t.Logf("Info Expected Error in Empty Queue - %v", err)
+	// if err == nil {
+	// 	t.Errorf("Expected Error but got NIL instead")
+	// 	t.Fail()
+	// }
+	if err != nil {
+		t.Errorf("Expected No Error but got %v instead", err)
 		t.Fail()
 	}
 	if n != 0 {
@@ -465,4 +472,163 @@ func TestReadWithoutWrite(t *testing.T) {
 		t.FailNow()
 	}
 
+}
+
+func TestTimeoutSetting(t *testing.T) {
+
+	loadConfig(t)
+
+	// Compute Time
+	baud := 9600
+	timeout := float64(((1.0 / float64(baud)) * 12.0) * 1e6) // In Microseconds
+	waitTimeMS := time.Duration(timeout/1000) * time.Millisecond
+
+	// Check if its less than 10000 Microseconds
+	if timeout < 10000.0 {
+		waitTimeMS = 10 * time.Millisecond
+	}
+	timeoutUS := time.Duration(timeout) * time.Microsecond
+	t.Logf("Actual Timeout %v", timeout)
+	t.Logf("Calculated Timeout %v", timeoutUS)
+	t.Logf("Calculated Wait Time %v", waitTimeMS)
+
+	// Open the Standard Port Config
+	ref, err := OpenPort(&SerialConfig{
+		Name:        cfg.PortName,
+		Baud:        baud,
+		Flow:        FlowNone,
+		Parity:      ParityNone,
+		StopBits:    StopBits1,
+		ReadTimeout: timeoutUS,
+	})
+	if err != nil {
+		t.Errorf("Error in Opening Port - %v", err)
+		t.FailNow()
+	}
+
+	// Clean the Buffer
+	// Write 1 Byte
+	var tBuf []byte
+	tBuf = append(tBuf, byte(0x55))
+	n, err := ref.Write(tBuf)
+	// Mark The Reception Start Time
+	tStart := time.Now()
+	// Check for Transmit issues
+	if err != nil {
+		t.Errorf("Expected No Error in Transmit instead Got - %v", err)
+		t.Fail()
+	}
+	if n != 1 {
+		t.Errorf("Expected Transmitted Number of Bytes 1 but Got %v", n)
+		t.Fail()
+	}
+
+	// Reception only if Transmit was successful
+	if err == nil {
+		// Make way for Reception
+		rBuf := make([]byte, 1)
+		n, err = ref.Read(rBuf)
+		// Timestamp the Duration
+		tDur := time.Since(tStart)
+		// Check for Reception issues
+		if err != nil {
+			t.Errorf("Expected No Error in Reception instead Got - %v", err)
+			t.Fail()
+		}
+		if n != 1 {
+			t.Errorf("Expected Received Number of Bytes 1 but Got %v", n)
+			t.Fail()
+		}
+		// Total Duration
+		t.Logf("Actual Time Duration to Receive: %v", tDur)
+		// Check for the Upper Bounds on the Duration
+		if tDur > (waitTimeMS + (timeoutUS * 2)) {
+			t.Errorf("Expected time Duration to be Max %v but got %v", (waitTimeMS + timeoutUS), tDur)
+			t.Fail()
+		}
+	}
+
+	err = ref.Close()
+	if err != nil {
+		t.Errorf("Error in Closing Port - %v", err)
+		t.FailNow()
+	}
+}
+
+func TestLongTimeoutSetting(t *testing.T) {
+
+	loadConfig(t)
+
+	// Compute Time
+	baud := 9600
+	timeout := float64(((1.0 / float64(baud)) * 12.0) * 1e6) // In Microseconds
+	waitTimeMS := 40 * time.Second                           // Longest Possible Timeout + 1
+
+	timeoutUS := time.Duration(timeout) * time.Microsecond
+	t.Logf("Actual Timeout %v", timeout)
+	t.Logf("Calculated Timeout %v", timeoutUS)
+	t.Logf("Calculated Wait Time %v", waitTimeMS)
+
+	// Open the Standard Port Config
+	ref, err := OpenPort(&SerialConfig{
+		Name:        cfg.PortName,
+		Baud:        baud,
+		Flow:        FlowNone,
+		Parity:      ParityNone,
+		StopBits:    StopBits1,
+		ReadTimeout: timeoutUS,
+	})
+	if err != nil {
+		t.Errorf("Error in Opening Port - %v", err)
+		t.FailNow()
+	}
+
+	// Clean the Buffer
+	// Write 1 Byte
+	var tBuf []byte
+	tBuf = append(tBuf, byte(0x55))
+	n, err := ref.Write(tBuf)
+	// Mark The Reception Start Time
+	tStart := time.Now()
+	// Check for Transmit issues
+	if err != nil {
+		t.Errorf("Expected No Error in Transmit instead Got - %v", err)
+		t.Fail()
+	}
+	if n != 1 {
+		t.Errorf("Expected Transmitted Number of Bytes 1 but Got %v", n)
+		t.Fail()
+	}
+
+	// Reception only if Transmit was successful
+	if err == nil {
+		// Make way for Reception
+		rBuf := make([]byte, 1)
+		n, err = ref.Read(rBuf)
+		// Timestamp the Duration
+		tDur := time.Since(tStart)
+		// Check for Reception issues
+		if err != nil {
+			t.Errorf("Expected No Error in Reception instead Got - %v", err)
+			t.Fail()
+		}
+		if n != 1 {
+			t.Errorf("Expected Received Number of Bytes 1 but Got %v", n)
+			t.Fail()
+		}
+		// Total Duration
+		t.Logf("Actual Time Duration to Receive: %v", tDur)
+		// Check for the Upper Bounds on the Duration
+		if tDur > (waitTimeMS + timeoutUS) {
+			t.Errorf("Expected time Duration to be Max %v but got %v",
+				(waitTimeMS + timeoutUS), tDur)
+			t.Fail()
+		}
+	}
+
+	err = ref.Close()
+	if err != nil {
+		t.Errorf("Error in Closing Port - %v", err)
+		t.FailNow()
+	}
 }
