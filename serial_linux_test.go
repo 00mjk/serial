@@ -481,16 +481,9 @@ func TestTimeoutSetting(t *testing.T) {
 	// Compute Time
 	baud := 9600
 	timeout := float64(((1.0 / float64(baud)) * 12.0) * 1e6) // In Microseconds
-	waitTimeMS := time.Duration(timeout/1000) * time.Millisecond
-
-	// Check if its less than 10000 Microseconds
-	if timeout < 10000.0 {
-		waitTimeMS = 10 * time.Millisecond
-	}
 	timeoutUS := time.Duration(timeout) * time.Microsecond
 	t.Logf("Actual Timeout %v", timeout)
 	t.Logf("Calculated Timeout %v", timeoutUS)
-	t.Logf("Calculated Wait Time %v", waitTimeMS)
 
 	// Open the Standard Port Config
 	ref, err := OpenPort(&SerialConfig{
@@ -541,9 +534,9 @@ func TestTimeoutSetting(t *testing.T) {
 		}
 		// Total Duration
 		t.Logf("Actual Time Duration to Receive: %v", tDur)
-		// Check for the Upper Bounds on the Duration
-		if tDur > (waitTimeMS + (timeoutUS * 2)) {
-			t.Errorf("Expected time Duration to be Max %v but got %v", (waitTimeMS + timeoutUS), tDur)
+		// Check for the Lower Bounds on the Duration
+		if tDur < timeoutUS {
+			t.Errorf("Expected time Duration to be Min %v but got %v", timeoutUS, tDur)
 			t.Fail()
 		}
 	}
@@ -561,13 +554,11 @@ func TestLongTimeoutSetting(t *testing.T) {
 
 	// Compute Time
 	baud := 9600
-	timeout := float64(((1.0 / float64(baud)) * 12.0) * 1e6) // In Microseconds
-	waitTimeMS := 40 * time.Second                           // Longest Possible Timeout + 1
+	timeout := 25600000 // (In Microseconds) Longest Possible Timeout + 100 Ms
 
 	timeoutUS := time.Duration(timeout) * time.Microsecond
 	t.Logf("Actual Timeout %v", timeout)
 	t.Logf("Calculated Timeout %v", timeoutUS)
-	t.Logf("Calculated Wait Time %v", waitTimeMS)
 
 	// Open the Standard Port Config
 	ref, err := OpenPort(&SerialConfig{
@@ -619,9 +610,9 @@ func TestLongTimeoutSetting(t *testing.T) {
 		// Total Duration
 		t.Logf("Actual Time Duration to Receive: %v", tDur)
 		// Check for the Upper Bounds on the Duration
-		if tDur > (waitTimeMS + timeoutUS) {
+		if tDur > timeoutUS {
 			t.Errorf("Expected time Duration to be Max %v but got %v",
-				(waitTimeMS + timeoutUS), tDur)
+				timeoutUS, tDur)
 			t.Fail()
 		}
 	}
