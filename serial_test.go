@@ -261,6 +261,94 @@ func TestSerialConfig_P01(t *testing.T) {
 	closePort(t, handle)
 }
 
+func TestSerialConfig_P02(t *testing.T) {
+	type args struct {
+		s byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "1 Stop Bit",
+			args: args{s: StopBits1},
+			want: "1",
+		},
+		{
+			name: "1.5 Stop Bit",
+			args: args{s: StopBits15},
+			want: "1.5",
+		},
+		{
+			name: "2 Stop Bit",
+			args: args{s: StopBits2},
+			want: "2",
+		},
+		{
+			name: "Unknown Stop Bit",
+			args: args{s: StopBits2 + 1},
+			want: "Unknown " + strconv.Itoa(int(StopBits2+1)),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := stopBitStr(tt.args.s); got != tt.want {
+				t.Errorf("stopBitStr() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSerialConfig_P03(t *testing.T) {
+	type args struct {
+		p byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "None Parity",
+			args: args{p: ParityNone},
+			want: "N",
+		},
+		{
+			name: "Even Parity",
+			args: args{p: ParityEven},
+			want: "E",
+		},
+		{
+			name: "Odd Parity",
+			args: args{p: ParityOdd},
+			want: "O",
+		},
+		{
+			name: "Mark Parity",
+			args: args{p: ParityMark},
+			want: "MARK",
+		},
+		{
+			name: "Space Parity",
+			args: args{p: ParitySpace},
+			want: "SPACE",
+		},
+		{
+			name: "Invalid Parity",
+			args: args{p: ParitySpace + 1},
+			want: "Unknown " + strconv.Itoa(int(ParitySpace+1)),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := parityStr(tt.args.p); got != tt.want {
+				t.Errorf("parityStr() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestSerialIntegration_P01(t *testing.T) {
 
 	verifySetup(t, paramLOOPBACK)
