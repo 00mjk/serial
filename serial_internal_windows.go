@@ -1,6 +1,11 @@
+// Copyright 2021 Abhijit Bose. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Use of this source code is governed by a Apache 2.0 license that can be found
+// in the LICENSE file.
+
 // +build windows
 
-package goembserial
+package serial
 
 import (
 	"errors"

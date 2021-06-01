@@ -1,5 +1,7 @@
-## Copyright (C) 2020 Abhijit Bose
-## SPDX-License-Identifier: GPL-2.0-only
+## Copyright 2021 Abhijit Bose. All rights reserved.
+## SPDX-License-Identifier: Apache-2.0
+## Use of this source code is governed by a Apache 2.0 license that can be found
+## in the LICENSE file.
 
 # Makefile for testing
 # Windows Specifics

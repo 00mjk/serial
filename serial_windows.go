@@ -1,6 +1,11 @@
+// Copyright 2021 Abhijit Bose. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Use of this source code is governed by a Apache 2.0 license that can be found
+// in the LICENSE file.
+
 // +build windows
 
-package goembserial
+package serial
 
 import (
 	"context"
@@ -12,7 +17,7 @@ import (
 
 // TODO: Add Custom Logging for each instance
 type serialPort struct {
-	conf         SerialConfig
+	conf         Config
 	fileInstance *os.File
 	hWnd         syscall.Handle
 	ctx          context.Context
@@ -31,7 +36,7 @@ Library Access
 */
 
 // Platform Specific Open Port Function
-func openPort(cfg *SerialConfig) (SerialInterface, error) {
+func openPort(cfg *Config) (Port, error) {
 
 	if len(cfg.Name) > 0 && cfg.Name[0] != '\\' {
 		cfg.Name = "\\\\.\\" + cfg.Name
@@ -88,7 +93,7 @@ func openPort(cfg *SerialConfig) (SerialInterface, error) {
 	sp.ro = ro
 	sp.wo = wo
 	sp.ctx, sp.cancelfunc = context.WithCancel(context.Background())
-	log.Println("SerialPort Instance Created for ", sp.conf.Name,
+	log.Println("serialPort Instance Created for ", sp.conf.Name,
 		sp.conf.Baud, parityStr(sp.conf.Parity), stopBitStr(sp.conf.StopBits))
 	return sp, nil
 }

@@ -1,4 +1,4 @@
-module github.com/boseji/goembserial
+module github.com/boseji/goSerialPort
 
 go 1.14
 

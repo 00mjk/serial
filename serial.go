@@ -1,7 +1,9 @@
-// Copyright (C) 2020 Abhijit Bose
-// SPDX-License-Identifier: GPL-2.0-only
+// Copyright 2021 Abhijit Bose. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Use of this source code is governed by a Apache 2.0 license that can be found
+// in the LICENSE file.
 
-// Package goembserial or GoEmbSerial is Embedded focused serial port package that allows you to read, write
+// Package serial is Embedded focused serial port package that allows you to read, write
 // and configure the serial port.
 //
 // This project draws inspiration from the github.com/tarm/serial package
@@ -28,7 +30,7 @@
 //  8. Sending Break from TX line
 //  X. ... More on the way ...
 //
-package goembserial
+package serial
 
 import (
 	"fmt"
@@ -72,8 +74,8 @@ const (
 	FlowSoft byte = iota // XON / XOFF based - Not Supported
 )
 
-// SerialConfig store's the given Serial Port configuration
-type SerialConfig struct {
+// Config stores the complete configuration of a Serial Port
+type Config struct {
 	Name         string
 	Baud         int
 	ReadTimeout  time.Duration // Blocks the Read operation for a specified time
@@ -87,19 +89,19 @@ type SerialConfig struct {
 
 var (
 	// ErrNotImplemented -
-	ErrNotImplemented = fmt.Errorf("Not Implemented yet")
+	ErrNotImplemented = fmt.Errorf("not implemented yet")
 	// ErrPortNotInitialized -
-	ErrPortNotInitialized = fmt.Errorf("Port not initialized or closed")
+	ErrPortNotInitialized = fmt.Errorf("port not initialized or closed")
 	// ErrNotOpen -
-	ErrNotOpen = fmt.Errorf("Error Port Not Open")
+	ErrNotOpen = fmt.Errorf("port not open")
 	// ErrAlreadyOpen -
-	ErrAlreadyOpen = fmt.Errorf("Error Port is Already Open")
+	ErrAlreadyOpen = fmt.Errorf("port is already open")
 	// ErrAccessDenied -
-	ErrAccessDenied = fmt.Errorf("Access Denied")
+	ErrAccessDenied = fmt.Errorf("access denied")
 )
 
-// SerialInterface Type for Multi platform implementation of Serial port functionality
-type SerialInterface interface {
+// Port Type for Multi platform implementation of Serial port functionality
+type Port interface {
 	io.ReadWriteCloser
 	Rts(en bool) (err error)
 	Cts() (en bool, err error)
@@ -112,7 +114,7 @@ type SerialInterface interface {
 }
 
 // OpenPort is a Function to Create the Serial Port and return an Interface type enclosing the configuration
-func OpenPort(cfg *SerialConfig) (SerialInterface, error) {
+func OpenPort(cfg *Config) (Port, error) {
 	return openPort(cfg)
 }
 
@@ -144,4 +146,25 @@ func parityStr(p byte) string {
 	} else {
 		return "Unknown " + strconv.Itoa(int(p))
 	}
+}
+
+// Internal function for Loggin Flow Control bits
+func flowStr(f byte) string {
+	if f == FlowNone {
+		return "None"
+	} else if f == FlowHardware {
+		return "CTS/RTS"
+	} else if f == FlowSoft {
+		return "XON/XOFF"
+	}
+	return "Unknown " + strconv.Itoa(int(f))
+}
+
+// String is the implementation of the Stringer interface
+func (c *Config) String() string {
+	return fmt.Sprintf(
+		"Port : %q Baud: %d Parity: %s StopBits: %s bits FlowControl: %s SignalInversion: %t",
+		c.Name, c.Baud, parityStr(c.Parity), stopBitStr(c.StopBits),
+		flowStr(c.Flow), c.SignalInvert,
+	)
 }

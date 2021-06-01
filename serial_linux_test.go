@@ -1,9 +1,11 @@
-// Copyright (C) 2020 Abhijit Bose
-// SPDX-License-Identifier: GPL-2.0-only
+// Copyright 2021 Abhijit Bose. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Use of this source code is governed by a Apache 2.0 license that can be found
+// in the LICENSE file.
 
 // +build linux
 
-package goembserial
+package serial
 
 import (
 	"encoding/json"
@@ -56,34 +58,34 @@ func TestExtOpenPortConfig(t *testing.T) {
 	// Test Type
 	tt := []struct {
 		name   string
-		args   *SerialConfig
+		args   *Config
 		hasErr bool
 		isNil  bool
 	}{
 		{
 			name: "Error Baud Rate 0",
-			args: &SerialConfig{
+			args: &Config{
 				Baud: 0,
 			},
 			hasErr: true, isNil: true,
 		},
 		{
 			name: "Error Baud Rate of ESP8266 76800",
-			args: &SerialConfig{
+			args: &Config{
 				Baud: 76800,
 			},
 			hasErr: true, isNil: true,
 		},
 		{
 			name: "Error Baud Rate of Very High 4500000",
-			args: &SerialConfig{
+			args: &Config{
 				Baud: 4500000,
 			},
 			hasErr: true, isNil: true,
 		},
 		{
 			name: "Compatible Baud Rate of 115200",
-			args: &SerialConfig{
+			args: &Config{
 				Name:     cfg.PortName,
 				Baud:     115200,
 				Flow:     FlowNone,
@@ -94,7 +96,7 @@ func TestExtOpenPortConfig(t *testing.T) {
 		},
 		{
 			name: "Error Invalid Parity",
-			args: &SerialConfig{
+			args: &Config{
 				Name:   cfg.PortName,
 				Baud:   cfg.BaudRate,
 				Parity: ParitySpace + 1,
@@ -103,7 +105,7 @@ func TestExtOpenPortConfig(t *testing.T) {
 		},
 		{
 			name: "Error Invalid StopBit",
-			args: &SerialConfig{
+			args: &Config{
 				Name:     cfg.PortName,
 				Baud:     cfg.BaudRate,
 				Parity:   ParityNone,
@@ -113,7 +115,7 @@ func TestExtOpenPortConfig(t *testing.T) {
 		},
 		{
 			name: "Error Not Supported StopBit 1.5",
-			args: &SerialConfig{
+			args: &Config{
 				Name:     cfg.PortName,
 				Baud:     cfg.BaudRate,
 				Parity:   ParityNone,
@@ -123,7 +125,7 @@ func TestExtOpenPortConfig(t *testing.T) {
 		},
 		{
 			name: "Error Invalid Flow Control",
-			args: &SerialConfig{
+			args: &Config{
 				Name:     cfg.PortName,
 				Baud:     cfg.BaudRate,
 				Parity:   ParityNone,
@@ -134,7 +136,7 @@ func TestExtOpenPortConfig(t *testing.T) {
 		},
 		{
 			name: "Error Invalid Flow Control",
-			args: &SerialConfig{
+			args: &Config{
 				Name:     cfg.PortName,
 				Baud:     cfg.BaudRate,
 				Parity:   ParityNone,
@@ -145,7 +147,7 @@ func TestExtOpenPortConfig(t *testing.T) {
 		},
 		{
 			name: "Error Port Name that is not Connected",
-			args: &SerialConfig{
+			args: &Config{
 				Name:     "/dev/ttyUSB100",
 				Baud:     cfg.BaudRate,
 				Parity:   ParityNone,
@@ -156,7 +158,7 @@ func TestExtOpenPortConfig(t *testing.T) {
 		},
 		{
 			name: "Error Port Name that set Correctly",
-			args: &SerialConfig{
+			args: &Config{
 				Name:     "/dev/ttyS0",
 				Baud:     cfg.BaudRate,
 				Parity:   ParityNone,
@@ -235,7 +237,7 @@ func TestIntOpenPortReOpen(t *testing.T) {
 	loadConfig(t)
 
 	// Check If an Open Port AutoCloses
-	extRef, err := OpenPort(&SerialConfig{
+	extRef, err := OpenPort(&Config{
 		Name:     cfg.PortName,
 		Baud:     cfg.BaudRate,
 		Flow:     FlowNone,
@@ -292,7 +294,7 @@ func TestOpenPortBlocked(t *testing.T) {
 	defer unix.Close(ext)
 
 	// Attempt to Open Port Again
-	ref, err := OpenPort(&SerialConfig{
+	ref, err := OpenPort(&Config{
 		Name:     cfg.PortName,
 		Baud:     cfg.BaudRate,
 		Flow:     FlowNone,
@@ -435,7 +437,7 @@ func TestReadWithoutWrite(t *testing.T) {
 	loadConfig(t)
 
 	// Open the Standard Port Config
-	ref, err := OpenPort(&SerialConfig{
+	ref, err := OpenPort(&Config{
 		Name:        cfg.PortName,
 		Baud:        cfg.BaudRate,
 		Flow:        FlowNone,
@@ -486,7 +488,7 @@ func TestTimeoutSetting(t *testing.T) {
 	t.Logf("Calculated Timeout %v", timeoutUS)
 
 	// Open the Standard Port Config
-	ref, err := OpenPort(&SerialConfig{
+	ref, err := OpenPort(&Config{
 		Name:        cfg.PortName,
 		Baud:        baud,
 		Flow:        FlowNone,
@@ -561,7 +563,7 @@ func TestLongTimeoutSetting(t *testing.T) {
 	t.Logf("Calculated Timeout %v", timeoutUS)
 
 	// Open the Standard Port Config
-	ref, err := OpenPort(&SerialConfig{
+	ref, err := OpenPort(&Config{
 		Name:        cfg.PortName,
 		Baud:        baud,
 		Flow:        FlowNone,

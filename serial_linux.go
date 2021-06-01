@@ -1,9 +1,11 @@
-// Copyright (C) 2020 Abhijit Bose
-// SPDX-License-Identifier: GPL-2.0-only
+// Copyright 2021 Abhijit Bose. All rights reserved.
+// SPDX-License-Identifier: Apache-2.0
+// Use of this source code is governed by a Apache 2.0 license that can be found
+// in the LICENSE file.
 
 // +build linux
 
-package goembserial
+package serial
 
 import (
 	"fmt"
@@ -25,11 +27,11 @@ type serialPort struct {
 	// Invert Modem signals
 	sigInv bool
 	// Configuration
-	conf SerialConfig
+	conf Config
 }
 
 // Platform Specific Open Port Function
-func openPort(cfg *SerialConfig) (SerialInterface, error) {
+func openPort(cfg *Config) (Port, error) {
 	s := &serialPort{}
 
 	// Interpret the Config for Potential Errors
@@ -126,7 +128,7 @@ func (s *serialPort) Open(name string) error {
 		uintptr(unix.TIOCEXCL),
 		0,
 	); e1 != 0 {
-		return fmt.Errorf("Failed to Get Exclusive Access - %v", e1)
+		return fmt.Errorf("failed to get exclusive access - %v", e1)
 	}
 
 	return err
@@ -200,7 +202,7 @@ func (s *serialPort) Close() error {
 		uintptr(unix.TIOCNXCL),
 		0,
 	); e1 != 0 {
-		return fmt.Errorf("Failed to Release Exclusive Access - %v", e1)
+		return fmt.Errorf("failed to release exclusive access - %v", e1)
 	}
 
 	// Perform the Actual Close
@@ -546,12 +548,12 @@ func linuxFindBaud(baud int) (int, error) {
 		baudRate = unix.B4000000
 	default:
 		baudRate = 0 // TODO: Indicate we might Have Custom Baud Rate
-		return 0, fmt.Errorf("Error Incorrect Baudrate or not supported")
+		return 0, fmt.Errorf("error incorrect baudrate or not supported")
 	}
 	return baudRate, nil
 }
 
-func getTermiosFor(cfg *SerialConfig) (unix.Termios, error) {
+func getTermiosFor(cfg *Config) (unix.Termios, error) {
 	var t unix.Termios
 	// Set the Base RAW Mode - default 8 Bits
 	t.Cflag = unix.CREAD | unix.CLOCAL | unix.CS8
@@ -579,7 +581,7 @@ func getTermiosFor(cfg *SerialConfig) (unix.Termios, error) {
 	case ParityMark:
 		t.Cflag |= unix.PARENB | unix.PARODD | unix.CMSPAR
 	default:
-		return unix.Termios{}, fmt.Errorf("Invalid or not supported Parity")
+		return unix.Termios{}, fmt.Errorf("invalid or not supported parity")
 	}
 	// Set Stop Bits
 	t.Cflag &^= unix.CSTOPB
@@ -590,7 +592,7 @@ func getTermiosFor(cfg *SerialConfig) (unix.Termios, error) {
 	case StopBits2:
 		t.Cflag |= unix.CSTOPB
 	default:
-		return unix.Termios{}, fmt.Errorf("Invalid or not supported Stop Bits")
+		return unix.Termios{}, fmt.Errorf("invalid or not supported stop bits")
 	}
 	// Set Flow Control
 	t.Cflag &^= unix.CRTSCTS
@@ -602,7 +604,7 @@ func getTermiosFor(cfg *SerialConfig) (unix.Termios, error) {
 	case FlowHardware:
 		t.Cflag |= unix.CRTSCTS
 	default:
-		return unix.Termios{}, fmt.Errorf("Invalid or not supported Flow Control")
+		return unix.Termios{}, fmt.Errorf("invalid or not supported flow control")
 	}
 	// Timeout Settings
 	// Convert Time Out to Deci Seconds (1/10 of a Seconds)
