@@ -8,7 +8,7 @@
 package serial
 
 import (
-	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"syscall"
@@ -252,11 +252,11 @@ func wSetCommState(h syscall.Handle, baud int, stopbits byte, parity byte, flow 
 	log.Println("Byte val of commstat flags[1]:", strconv.FormatInt(int64(params.flags[1]), 2))
 
 	if baud == 0 || baud < 0 {
-		return errors.New("Error in Baudrate " + string(baud))
+		return fmt.Errorf("error in baudrate %d", baud)
 	}
 
 	if stopbits == StopBits15 {
-		return errors.New("Stopbits " + stopBitStr(stopbits) + " Not supported by many serial ports")
+		return fmt.Errorf("stopbits %s not supported by many serial ports", stopBitStr(stopbits))
 	}
 
 	params.BaudRate = uint32(baud)
@@ -320,8 +320,7 @@ func wSetupComm(h syscall.Handle, in, out int) error {
 }
 
 func wEscapeCommFunction(h syscall.Handle, operation uint32) error {
-	var dwFunc uint32
-	dwFunc = operation
+	dwFunc := operation
 	r, _, err := syscall.Syscall(nEscapeCommFunction, 2, uintptr(h), uintptr(dwFunc), 0)
 	if r == 0 {
 		return err

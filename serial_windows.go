@@ -9,6 +9,7 @@ package serial
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -23,9 +24,9 @@ type serialPort struct {
 	ctx          context.Context
 	cancelfunc   context.CancelFunc
 	//done    chan<- bool // Used only for Indication that the last operation was completed
-	ro      *syscall.Overlapped
-	wo      *syscall.Overlapped
-	isBreak bool // Indicate if the Break is enabled
+	ro *syscall.Overlapped
+	wo *syscall.Overlapped
+	// isBreak bool // Indicate if the Break is enabled
 
 	rl sync.Mutex // Need to Eleminate these
 	wl sync.Mutex
@@ -42,8 +43,12 @@ func openPort(cfg *Config) (Port, error) {
 		cfg.Name = "\\\\.\\" + cfg.Name
 	}
 
+	name, err := syscall.UTF16PtrFromString(cfg.Name)
+	if err != nil {
+		return nil, fmt.Errorf("failed to to prepare name of 'COM' port while opening - %w", err)
+	}
 	// Create the Handle
-	h, err := syscall.CreateFile(syscall.StringToUTF16Ptr(cfg.Name),
+	h, err := syscall.CreateFile(name,
 		syscall.GENERIC_READ|syscall.GENERIC_WRITE,
 		0,
 		nil,
