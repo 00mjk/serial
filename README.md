@@ -1,15 +1,15 @@
-# goSerialPort Golang Embedded Serial port
+# goSerialPort : Embedded Serial port Package
 
 Package `goSerialPort` is **Embedded** focused serial port package.
-It allows you to read, write and configure the serial port.
+It helps to read, write and configure the serial port.
 
-This project draws inspiration from the `github.com/tarm/serial` package
-and `github.com/johnlauer/goserial` package
+This project draws inspiration from the [`github.com/tarm/serial`](https://github.com/tarm/serial)
+and [`github.com/johnlauer/goserial`](http://github.com/johnlauer/goserial).
 
-This project aims to provide API and compatibility for windows and Linux.
-As time progresses other architectures would be added.
+This project aims to provide low level API and compatibility for *Windows* and *Linux*.
+As time progresses other OS and architectures would be added.
 
-This library perform read write in Non-Blocking Manner.
+This library perform read / write in *Non-Blocking Manner*.
 
 By default this package uses 8 bits (byte) data format for exchange.
 This is typical for **Embedded Applications** such as `UART` of an MCU.
@@ -33,6 +33,20 @@ Currently Following Features are supported:
 ```
 go get -u github.com/boseji/goSerialPort
 ```
+
+You can cross compile with 
+```
+GOOS=windows GOARCH=386 go install github.com/tarm/serial
+```
+Specifically for Window7 on *i386* or 32-bit.
+
+## Hardware Test Setup
+
+Use a USB to UART board where all the *UART standard signals* are exposed.
+
+Here is a picture explaining the Connections:
+
+![Test setup Hardware Connections](Test-Setup.jpg)
 
 ## License
 
