@@ -396,6 +396,36 @@ func (s *serialPort) SendBreak(en bool) (err error) {
 	return err
 }
 
+func (s *serialPort) FlushRx() (err error) {
+	// Establish Lock
+	s.mx.Lock()
+	defer s.mx.Unlock()
+
+	// Check If its Open
+	if !s.opened {
+		return ErrNotOpen
+	}
+
+	err = unix.IoctlSetInt(s.fd, unix.TCIOFLUSH, unix.TCIFLUSH)
+	// Return the Error
+	return
+}
+
+func (s *serialPort) FlushTx() (err error) {
+	// Establish Lock
+	s.mx.Lock()
+	defer s.mx.Unlock()
+
+	// Check If its Open
+	if !s.opened {
+		return ErrNotOpen
+	}
+
+	err = unix.IoctlSetInt(s.fd, unix.TCIOFLUSH, unix.TCOFLUSH)
+	// Return the Error
+	return
+}
+
 func (s *serialPort) SetTermios(t unix.Termios) error {
 	// Establish Lock
 	s.mx.Lock()
