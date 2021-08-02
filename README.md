@@ -3,8 +3,10 @@
 Package `goSerialPort` is **Embedded** focused serial port package.
 It helps to read, write and configure the serial port.
 
-This project draws inspiration from the [`github.com/tarm/serial`](https://github.com/tarm/serial)
-and [`github.com/johnlauer/goserial`](http://github.com/johnlauer/goserial).
+This project draws inspiration from 
+- [`github.com/tarm/serial`](https://github.com/tarm/serial)
+- [`github.com/johnlauer/goserial`](http://github.com/johnlauer/goserial)
+- [`go.bug.st/serial`](https://github.com/bugst/go-serial)
 
 This project aims to provide low level API and compatibility for *Windows* and *Linux*.
 As time progresses other OS and architectures would be added.
@@ -36,7 +38,7 @@ go get -u github.com/boseji/goSerialPort
 
 You can cross compile with 
 ```
-GOOS=windows GOARCH=386 go install github.com/tarm/serial
+GOOS=windows GOARCH=386 go install github.com/boseji/goSerialPort
 ```
 Specifically for Window7 on *i386* or 32-bit.
 
