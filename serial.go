@@ -6,10 +6,10 @@
 // Package serial is Embedded focused serial port package that allows you to read, write
 // and configure the serial port.
 //
-// This project draws inspiration from the github.com/tarm/serial package
-// and github.com/johnlauer/goserial package
+// This project draws inspiration from the github.com/tarm/serial package,
+// github.com/johnlauer/goserial package and go.bug.st/serial package
 //
-// Initially this project aims to provide API and compatibility for windows.
+// Initially this project aims to provide API and compatibility for Linux.
 // As time progresses other architectures would be added.
 //
 // This library is Context based and performs read write asynchronously.
@@ -31,6 +31,8 @@
 //  X. ... More on the way ...
 //
 package serial
+
+//go:generate go run golang.org/x/sys/windows/mkwinsyscall -output zsyscall_windows.go syscall_windows.go
 
 import (
 	"fmt"

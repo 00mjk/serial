@@ -73,6 +73,10 @@ hwsetup:
 	@read
 	@echo .
 
+gen-windows:
+    rm zsyscall_windows.go
+	go run golang.org/x/sys/windows/mkwinsyscall -output zsyscall_windows.go syscall_windows.go
+
 # Trick to Do a combined Coverage file
 test-cover-html:
 	echo "mode: count" > coverage-all.out
@@ -83,4 +87,4 @@ test-cover-html:
 	go clean -testcache
 
 
-.PHONY: test cover-count-start cover cover-count cover-all test-cover-html
+.PHONY: test cover-count-start cover cover-count cover-all test-cover-html gen-windows
