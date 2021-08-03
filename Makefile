@@ -74,7 +74,7 @@ hwsetup:
 	@echo .
 
 gen-windows:
-    rm zsyscall_windows.go
+	rm zsyscall_windows.go
 	go run golang.org/x/sys/windows/mkwinsyscall -output zsyscall_windows.go syscall_windows.go
 
 # Trick to Do a combined Coverage file
