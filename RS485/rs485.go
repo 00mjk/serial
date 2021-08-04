@@ -32,16 +32,22 @@ type Port struct {
 
 // New creates a new Port that is configured for the timing and signalling
 // requirements for halfduplex RS485
-func New(port serial.Port, delayBefore, delayAfter time.Duration, sig Control) *Port {
-	if port == nil {
-		return nil
+func New(port serial.Port, delayBefore, delayAfter time.Duration, sig Control) (*Port, error) {
+	if port == nil || sig == nil {
+		return nil, serial.ErrPortNotInitialized
 	}
-	return &Port{
+	p := &Port{
 		port:        port,
 		delayBefore: delayBefore,
 		delayAfter:  delayAfter,
 		sig:         sig,
 	}
+	// Initially Lower the signal
+	err := sig(false)
+	if err != nil {
+		return nil, fmt.Errorf("could not setup the signalling pin - %w", err)
+	}
+	return p, nil
 }
 
 // Write implemantion of io.Writer interface
@@ -51,7 +57,10 @@ func (p *Port) Write(b []byte) (n int, err error) {
 	}
 
 	// Startup
-	p.sig(true) // Activate the Signal
+	err = p.sig(true) // Activate the Signal
+	if err != nil {
+		return 0, fmt.Errorf("failed to raise the signal for RS485 Write - %w", err)
+	}
 	if p.delayBefore != 0 {
 		time.Sleep(p.delayBefore)
 	}
@@ -64,7 +73,7 @@ func (p *Port) Write(b []byte) (n int, err error) {
 		if p.delayAfter != 0 {
 			time.Sleep(p.delayAfter)
 		}
-		p.sig(false) // Deactivate
+		err = p.sig(false) // Deactivate
 	}()
 
 	return
@@ -85,7 +94,10 @@ func (p *Port) Read(b []byte) (n int, err error) {
 	}
 
 	// Startup
-	p.sig(false) // Activate the Signal
+	err = p.sig(false) // Activate the Signal
+	if err != nil {
+		return 0, fmt.Errorf("failed to lower the signal for RS485 Read - %w", err)
+	}
 
 	n, err = p.port.Read(b)
 	return
