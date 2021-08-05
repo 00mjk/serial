@@ -3,13 +3,13 @@
 // Use of this source code is governed by a Apache 2.0 license that can be found
 // in the LICENSE file.
 
-// Package rs485 provides additional control functionality over the serial port driver
+// Package RS485 provides additional control functionality over the serial port driver
 //
 // Typically the RTS signal is used to provide as a mechanism to control
 // transmit / receive enable. This package helps to achieve this.
 // Note: That this package only support half duplex RS485 links only.
 
-package rs485
+package RS485
 
 import (
 	"fmt"
