@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	serial "github.com/boseji/goSerialPort"
+	"github.com/boseji/serial"
 	"github.com/stretchr/testify/assert"
 )
 

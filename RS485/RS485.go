@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"time"
 
-	serial "github.com/boseji/goSerialPort"
+	"github.com/boseji/serial"
 )
 
 // Control is a type of function that can receive a boolean value and
